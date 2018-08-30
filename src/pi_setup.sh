@@ -90,14 +90,14 @@ systemctl start apache2 > /dev/null 2>&1
 wait
 
 echo ............. Downloading IRTSA Python Demo
-wget https://github.com/IRTSA-SoftwareProject/IRTSA-Server/archive/master.zip > /dev/null 2>&1
+wget https://github.com/IRTSA-SoftwareProject/IRTSA-Server-master/archive/master.zip > /dev/null 2>&1
 wait
 echo .............. Unzipping
 unzip master.zip > /dev/null 2>&1
 wait
 mkdir demo
 wait
-mv IRTSA-Server/src/demo/* demo/
+mv IRTSA-Server-master/src/demo/* demo/
 wait
 chown -R pi:pi demo
 echo ............... Removing Files
