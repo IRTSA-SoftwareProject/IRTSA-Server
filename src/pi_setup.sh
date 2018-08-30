@@ -90,19 +90,19 @@ systemctl start apache2 > /dev/null 2>&1
 wait
 
 echo ............. Downloading IRTSA Python Demo
-wget https://github.com/IRTSA-SoftwareProject/IRTSA-FFT-Python-Demo/archive/master.zip > /dev/null 2>&1
+wget https://github.com/IRTSA-SoftwareProject/IRTSA-Server/archive/master.zip > /dev/null 2>&1
 wait
 echo .............. Unzipping
 unzip master.zip > /dev/null 2>&1
 wait
 mkdir demo
 wait
-mv IRTSA-FFT-Python-Demo-master/src/* demo/
+mv IRTSA-Server/src/demo/* demo/
 wait
 chown -R pi:pi demo
 echo ............... Removing Files
 rm master.zip
-rm -rf IRTSA-FFT-Python-Demo-master/
+rm -rf IRTSA-Server
 echo ................ Installing required python libraries
 pip install imageio scipy > /dev/null 2>&1
 echo ................. DONE!!
