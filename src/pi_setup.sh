@@ -78,7 +78,27 @@ echo "        <p>Images can be found in the irscans folder: <em><a href="/irscan
 echo "</body>" >> /var/www/html/index.html
 echo "</html>" >> /var/www/html/index.html
 
-echo ............ Enabling and Starting Services
+echo .......... Downloading IRTSA Python Demo
+wget https://github.com/IRTSA-SoftwareProject/IRTSA-Server-master/archive/master.zip > /dev/null 2>&1
+wait
+
+echo ........... Unzipping
+unzip master.zip > /dev/null 2>&1
+wait
+mkdir demo
+wait
+mv IRTSA-Server-master/src/demo/* demo/
+wait
+chown -R pi:pi demo
+
+echo ............ Removing Files
+rm master.zip
+rm -rf IRTSA-Server
+
+echo ............. Installing required python libraries
+pip install imageio scipy > /dev/null 2>&1
+
+echo .............. Enabling and Starting Services
 systemctl enable hostapd > /dev/null 2>&1
 systemctl start hostapd > /dev/null 2>&1
 systemctl enable dnsmasq > /dev/null 2>&1
@@ -89,20 +109,4 @@ systemctl enable apache2 > /dev/null 2>&1
 systemctl start apache2 > /dev/null 2>&1
 wait
 
-echo ............. Downloading IRTSA Python Demo
-wget https://github.com/IRTSA-SoftwareProject/IRTSA-Server-master/archive/master.zip > /dev/null 2>&1
-wait
-echo .............. Unzipping
-unzip master.zip > /dev/null 2>&1
-wait
-mkdir demo
-wait
-mv IRTSA-Server-master/src/demo/* demo/
-wait
-chown -R pi:pi demo
-echo ............... Removing Files
-rm master.zip
-rm -rf IRTSA-Server
-echo ................ Installing required python libraries
-pip install imageio scipy > /dev/null 2>&1
 echo ................. DONE!!

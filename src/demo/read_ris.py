@@ -18,12 +18,12 @@ if __name__ == '__main__':
     thermogram = ris_processing.read_ris.get_thermogram(f)
     
     print('Saving thermogram to .gif...')
-    ris_processing.file_io_thermal.save_gif(thermogram, '/var/www/html/irscans/' + time + 'thermogram.gif')
+    ris_processing.file_io_thermal.save_gif(thermogram, '/var/www/html/irscans/' + time + '.gif')
     
     print('Processing image...')
     phasemap = ris_processing.process_image.process_image(thermogram)
     
     print('Saving phasemap to .png...')
-    ris_processing.file_io_thermal.save_png(phasemap, '/var/www/html/irscans/' + time + 'phase.png')
+    ris_processing.file_io_thermal.save_png(phasemap, '/var/www/html/irscans/' + time + '.png')
     f.close()
     print("Done! Process Complete.")
