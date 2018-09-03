@@ -79,7 +79,7 @@ echo "</body>" >> /var/www/html/index.html
 echo "</html>" >> /var/www/html/index.html
 
 echo .......... Downloading IRTSA Python Demo
-wget https://github.com/IRTSA-SoftwareProject/IRTSA-Server-master/archive/master.zip > /dev/null 2>&1
+wget https://github.com/IRTSA-SoftwareProject/IRTSA-Server/archive/master.zip > /dev/null 2>&1
 wait
 
 echo ........... Unzipping
@@ -109,4 +109,4 @@ systemctl enable apache2 > /dev/null 2>&1
 systemctl start apache2 > /dev/null 2>&1
 wait
 
-echo ................. DONE!!
+echo ............... DONE!!
