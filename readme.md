@@ -10,7 +10,7 @@ To setup the pi install rasbian stretch lite (no gui) from:
 once installed download the pi_setup.sh script, make it executable then run it with the following commands:
 
 - wget https://raw.githubusercontent.com/IRTSA-SoftwareProject/IRTSA-Server/master/src/pi_setup.sh
-- chown +x pi_setup.sh
+- chmod +x pi_setup.sh
 - sudo ./pi_setup.sh
 
 The raspberry pi will then be setup in access point mode and can be connected to with the IP address 10.0.0.1 either through a web browser or a ssh client (putty)
