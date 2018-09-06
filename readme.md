@@ -1,6 +1,6 @@
 # pi_setup.sh Instructions
 
-Note: This requires a RPI with a wifi card on it for the wireless access point aspect access point part to work.
+Note: This requires a RPI with a wifi card on it for the wireless access point aspect to work.
 
 ## Installation
 
