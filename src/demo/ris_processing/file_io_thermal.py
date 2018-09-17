@@ -17,15 +17,20 @@ def _convert_to_u_int8(image):
 
 def save_png(image, file_name):
     ''' Expects a 2D u_int16 numpy multdimensional array where
-    each dimension is: [row, column].
-    Converts to a u_int8 array and saves to *.png.
+    each dimension is: [row, column]. Converts to a u_int8
+    array and saves to *.png.
     '''
     #Check that the directory exists/was created
-    check_dir(file_name)
+    if not check_dir(file_name):
+        return False
     
-    # Convert 16-bit range to 8-bit range (imageio.imsave is incompatible with 16-bit)
-    image = _convert_to_u_int8(image)
+    if image.ndim > 2:
+        image = _convert_to_u_int8(image[0,:,:])
+    else:
+        image = _convert_to_u_int8(image)
+    # Convert 16-bit range to 8-bit range (imageio.imsave is incompatible with 16-bit)    
     imageio.imsave(file_name, image)
+    
     return True
     
 def save_gif(images, file_name):

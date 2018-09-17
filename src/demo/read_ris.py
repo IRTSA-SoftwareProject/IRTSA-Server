@@ -5,6 +5,7 @@
 import ris_processing.read_ris
 import ris_processing.file_io_thermal
 import ris_processing.process_image
+import numpy
 import sys
 
 #Time variable which has time passed to it from command executing script
@@ -22,10 +23,17 @@ if __name__ == '__main__':
         print('Failed to save .gif :(')
     
     print('Processing image...')
-    phasemap = ris_processing.process_image.process_image(thermogram)
+    phasemap = ris_processing.process_image.process_image(thermogram, frame_length = -1)
     
     print('Saving phasemap to .png...')
-    if not ris_processing.file_io_thermal.save_png(phasemap, '/var/www/html/irscans/' + time + '.png'):
-        print('Failed to save .png :(')
+    if phasemap.shape[0] == 1: #Check if there is only one thermogram
+        if not ris_processing.file_io_thermal.save_png(phasemap, '/var/www/html/irscans/' + time + '.png'):
+            print('Failed to save .png :(')
+    else: #Save all thermograms if more than one was produced
+        for i in range(0, phasemap.shape[0] - 1):
+            if not ris_processing.file_io_thermal.save_png(phasemap[i,:,:], '/var/www/html/irscans/' + time + '-' + str(i) + '.png'):
+                print('Failed to save .png :(')
+            
     f.close()
+    
     print("Done! Process Complete.")
