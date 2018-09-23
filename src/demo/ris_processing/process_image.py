@@ -9,13 +9,17 @@ import warnings
 warnings.filterwarnings('ignore')
 from math import ceil
 
-def process_image(thermogram, frame_length = -1, return_phase = 1):
+def process_image(thermogram, frame_length = -1, return_phase = 1,
+                  xStartSkip = 0, xEndSkip = 0, yStartSkip = 0, yEndSkip = 0):
     ''' Expects a thermogram as a u_int16 3D numpy multdimensional array where
     each dimension is: [frame, row, column]. 
     Frame_length sets the numbers of frames to use in FFT analysis, uses all frames
     by default.
     Return_phase controls what phase will be returned, 0 is always a blank map;
     should almost always be 1.
+    xStart, yStart, xEndSkip, and yEndSkip control how many pixels are skipped in
+    each direction from the x and y axis. Useful when there is a small area of
+    interest or we want to maximise contrast in an area. Also speed up processing.
     Returns an array of 2D phase maps in the format: [frame_index, row, column]
     '''
     
@@ -25,22 +29,25 @@ def process_image(thermogram, frame_length = -1, return_phase = 1):
     if frame_length == -1:
         frame_length = total_frames
     
-    #If the number of frames have been specified, loop over the fft until the entire
-    # thermogram has been analysed. 
+    yLength = thermogram.shape[1]; #Note that y is before x; a carry over from 
+    xLength = thermogram.shape[2]; # Matlab...
+    
     frame_index = 0 #Slice index
     #Preallocate phase maps
     phasemap_count = ceil(total_frames/frame_length)
+    phasemap = numpy.zeros([phasemap_count,
+                            yLength - yStartSkip - yEndSkip,
+                            xLength - xStartSkip - xEndSkip], 
+                            dtype = numpy.complex64)
     
-    phasemap = numpy.zeros([phasemap_count, thermogram.shape[1],
-                            thermogram.shape[2]], dtype = numpy.complex64)
-    
-    
-
+    #If the number of frames have been specified, loop over the fft until the entire
+    # thermogram has been analysed. 
     for frame_index in range (0, phasemap_count):
         #Perform the fft over the frame_index'th slice of the thermogram
         fftmap = scipy.fft(thermogram[frame_index * frame_length :
                                       (frame_index + 1) * frame_length,
-                                      :, :],
+                                      yStartSkip:yLength-yEndSkip,
+                                      xStartSkip:xLength-xEndSkip],
                                       n = frame_length,
                                       axis = 0)
         phasemap[frame_index, :, :] = scipy.angle(fftmap[return_phase, :, :])
