@@ -1,6 +1,6 @@
 ''' Created on 11 Apr. 2018
 This module provides a method to read *.ris files into a numpy
-multidimensional array.
+multidimensional array. Note that *.ris files are 16-bit per pixel.
 
 @author: James Moran
 '''
