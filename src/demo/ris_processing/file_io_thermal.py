@@ -15,14 +15,16 @@ def _max_range(image):
     '''
     
     image = numpy.real(image) #ignore complex values
+    #Maximise pixel depth by setting the lowest value to 0
     image = image-numpy.amin(image)
+    #Scale to one
     image = image/numpy.amax(image)
     return image
 
 def _convert_to_u_int8(image):
-    # Some information is lost in the casting process, but data operations still
-    # occur on the full 16-bit pixels, so the only losses are in the display image
-    # Maximise pixel depth by setting the lowest value to 0
+    ''' Some information is lost in the casting process, but data operations still
+    occur on the full 16-bit pixels, so the only losses are in the display image
+    '''
     
     image = _max_range(image)
     image = numpy.uint8(numpy.floor(numpy.real(image)/numpy.max(image)*255))
@@ -67,10 +69,8 @@ def open_png(file_name):
                                                imageio.imread(path + '/' + f)[None,:,:]),
                                                axis = 0)
     
-    #print(imageCube)
     imageCube = _convert_to_u_int16(imageCube)
-    #print(imageCube)
-    
+
     return imageCube
 
 def save_png(image, file_name):
