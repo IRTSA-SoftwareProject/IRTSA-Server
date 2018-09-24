@@ -16,5 +16,5 @@ async def on_connection(connection, path):
 
 def server():
     """ Returns a co-routine that will listen for new socket connections """
-    print(f'Listening for connections at ws://{host}:{port}')
+    print('Listening for connections at ws://{host}:{port}')
     return websockets.serve(on_connection, '0.0.0.0', port)
