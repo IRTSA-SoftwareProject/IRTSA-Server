@@ -69,7 +69,7 @@ def open_png(file_name):
                                                imageio.imread(path + '/' + f)[None,:,:]),
                                                axis = 0)
     
-    imageCube = _convert_to_u_int16(imageCube)
+    #imageCube = _convert_to_u_int16(imageCube)
 
     return imageCube
 

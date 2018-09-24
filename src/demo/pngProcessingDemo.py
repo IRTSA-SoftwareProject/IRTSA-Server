@@ -5,11 +5,12 @@
 import ris_processing.read_ris
 import ris_processing.file_io_thermal
 import ris_processing.process_image
+import ris_processing.stabilise_image
 import numpy
 import sys
 
 #Time variable which has time passed to it from command executing script
-time = sys.argv[1]
+#time = sys.argv[1]
 
 if __name__ == '__main__':
     print('Reading file...')
@@ -18,6 +19,9 @@ if __name__ == '__main__':
     print('Saving thermogram to .gif...')
     if not ris_processing.file_io_thermal.save_gif(thermogram, 'C:/PNG Dumps/Processing/out.gif'):
         print('Failed to save .gif :(')
+        
+    print('Stabilising image')
+    thermogram = ris_processing.stabilise_image.stabilise_image(thermogram)
         
     print('Processing image...')
     #phasemap = ris_processing.process_image.process_image(thermogram, frame_length = 10, xStartSkip = 45, xEndSkip = 60, yStartSkip = 175)
