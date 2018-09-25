@@ -36,9 +36,10 @@ Follow these steps in order to install and setup a Virtual Machine as the IRTSA 
 - Change the networking to Custom: vmnet1
 - Open the virtual network editor in VMware from Edit > Virtual Network Editor.
 - Ensure that the Host-Only radio box is checked and the Use Local DHCP check box is unticked.
-*Optional steps follow which are only to be used when wanting the Android SDK Emulator to communicate with the Virtual Machine*
+
+*The following are Optional steps to follow which are only to be used when wanting the Android SDK Emulator to communicate with the Virtual Machine*
 - Open your adapter settings on your host machine.
-- Disable any wireless or ethernet adapters in user that are not **VMware Network Adapter VMnet1** and ensure that VMnet1 is Enabled.
+- Disable any wireless or ethernet adapters that are not **VMware Network Adapter VMnet1** and ensure that VMnet1 is Enabled.
 - The VMnet 1 adapter will now get an IP address for the Virtual Machines DHCP server and the Emulator will be able to connect to the server with the IP 10.0.0.1.
 - **Note: Once communication is not needed reverse these optional steps by activating your Wireless and/or Ethernet Adapters for your host machine to connect to the internet again**
 
