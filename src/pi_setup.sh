@@ -105,7 +105,7 @@ chown -R pi:pi server
 
 echo ............ Removing Files
 rm master.zip
-rm -rf IRTSA-Server-Master
+rm -rf IRTSA-Server-master
 
 echo ............. Installing required python libraries
 pip install imageio scipy > /dev/null 2>&1
