@@ -1,66 +1,45 @@
 #!/bin/bash
-# This script will setup a raspberry pi 3B or 3B+ as the IRTSA
-# server.  This script requires a rpi with RASBIAN STRETCH LITE
-# ( https://downloads.raspberrypi.org/raspbian_lite_latest ) 
-# installed and an internet connection via the rpi's ethernet
-# port.  After the script has run the RPI will be accessable as
-# a wireless access point with the SSID being "rpi-AP" and password
-# being "rpiAPpw1" and can be access with the IP address 10.0.0.1
+# This script will setup the desktop image of Rasbian
+# ( https://downloads.raspberrypi.org/rpd_x86_latest )
+# as the IRTSA server, simply install the image from 
+# the raspberry pi website then run this script in the
+# GUI's terminal and when complete the server will 
+# restart as the server with the IP address 10.0.0.1
 #
 if [ "$EUID" -ne 0 ]
-  then echo "Please run as root by execution sudo ./pi_setup.sh"
+  then echo "Please run as root by execution sudo ./pi_setup_vm.sh"
   exit
 fi
 
 echo  " ________________________________"
 echo "|                                |"
-echo "|        Setup RPI Script!       |"
+echo "|      Setup RPI VM Script!      |"
 echo "|________________________________|"
 echo 
 echo 
 echo .. Installing required packages
 apt-get install dnsmasq hostapd apache2 python python3 -y > /dev/null 2>&1
 wait
-echo "... Configuring hostapd.conf (Wireless Access Point)"
-echo "#interface settings" > /etc/hostapd/hostapd.conf
-echo interface=wlan0 >> /etc/hostapd/hostapd.conf
-echo driver=nl80211 >> /etc/hostapd/hostapd.conf
-echo hw_mode=g >> /etc/hostapd/hostapd.conf
-echo channel=6 >> /etc/hostapd/hostapd.conf
-echo ieee80211n=1 >> /etc/hostapd/hostapd.conf
-echo auth_algs=1 >> /etc/hostapd/hostapd.conf
-echo ignore_broadcast_ssid=0 >> /etc/hostapd/hostapd.conf
-echo "#AP settings" >> /etc/hostapd/hostapd.conf
-echo ssid=rpi-AP >> /etc/hostapd/hostapd.conf
-echo wpa=2 >> /etc/hostapd/hostapd.conf
-echo wpa_passphrase=rpiAPpw1 >> /etc/hostapd/hostapd.conf
-echo wpa_key_mgmt=WPA-PSK >> /etc/hostapd/hostapd.conf
-echo rsn_pairwise=CCMP >> /etc/hostapd/hostapd.conf
+echo ... Configuring static IP for eth0
+echo "# profile static_eth0" >> /etc/dhcpcd.conf
+echo interface eth0 >> /etc/dhcpcd.conf
+echo static ip_address=10.0.0.1/24 >> /etc/dhcpcd.conf
+echo static routers=10.0.0.1 >> /etc/dhcpcd.conf
+echo static domain_name_servers=10.0.0.1 >> /etc/dhcpcd.conf
 
-echo .... Configuring interfaces
-echo allow-hotplug wlan0 > /etc/network/interfaces
-echo iface wlan0 inet static >> /etc/network/interfaces
-echo address 10.0.0.1 >> /etc/network/interfaces
-echo netmask 255.255.255.0 >> /etc/network/interfaces
-echo network 10.0.0.0 >> /etc/network/interfaces
-echo broadcast 10.0.0.255 >> /etc/network/interfaces
-
-echo ..... Editing dhcpcd.conf
-echo denyinterfaces wlan0 >> /etc/dhcpcd.conf
-
-echo ...... Configuring dnsmasq.conf
+echo .... Configuring dnsmasq.conf
 echo "#define interface that clients connect to" >> /etc/dnsmasq.conf
-echo interface=wlan0 >> /etc/dnsmasq.conf
+echo interface=eth0 >> /etc/dnsmasq.conf
 echo "#define server to use for dns" >> /etc/dnsmasq.conf
 echo server=10.0.0.1 >> /etc/dnsmasq.conf
 echo "#define lease IP range and lease duration" >> /etc/dnsmasq.conf
 echo dhcp-range=10.0.0.2,10.0.0.50,255.255.255.0,24h >> /etc/dnsmasq.conf
 
-echo ....... Creating irscans storage directory
+echo ..... Creating irscans storage directory
 mkdir /var/www/html/irscans
 wait
 chown -R pi:pi /var/www/html/irscans
-echo ........ Editing apach2e.conf
+echo ...... Editing apache2.conf
 echo "<Directory /var/www/html/irscans>" >> /etc/apache2/apache2.conf
 echo Options +Indexes +FollowSymLinks >> /etc/apache2/apache2.conf
 echo AllowOverride None >> /etc/apache2/apache2.conf
@@ -68,7 +47,7 @@ echo Require all granted >> /etc/apache2/apache2.conf
 echo ServerSignature Off >> /etc/apache2/apache2.conf
 echo "</Directory>" >> /etc/apache2/apache2.conf
 
-echo ......... Creating index.html
+echo ....... Creating index.html
 echo "<!DOCTYPE html>" > /var/www/html/index.html
 echo "<html lang="en">" >> /var/www/html/index.html
 echo "<head>" >> /var/www/html/index.html
@@ -85,11 +64,11 @@ echo "        <p>Images can be found in the irscans folder: <em><a href="/irscan
 echo "</body>" >> /var/www/html/index.html
 echo "</html>" >> /var/www/html/index.html
 
-echo .......... Downloading IRTSA Server and Demo
+echo ........ Downloading IRTSA Server and Demo
 wget https://github.com/IRTSA-SoftwareProject/IRTSA-Server/archive/master.zip > /dev/null 2>&1
 wait
 
-echo ........... Unzipping
+echo ......... Unzipping
 unzip master.zip > /dev/null 2>&1
 wait
 mkdir demo
@@ -103,16 +82,16 @@ mv IRTSA-Server-master/server/* server/
 wait
 chown -R pi:pi server
 
-echo ............ Removing Files
+echo .......... Removing Files
 rm master.zip
 rm -rf IRTSA-Server-master
 
-echo ............. Installing required python libraries
+echo ........... Installing required python libraries
 pip install imageio scipy > /dev/null 2>&1
 wait
 pip3 install Rx websockets > /dev/null 2>&1
 wait
-echo .............. Creating IRTSA Socket Server Service
+echo ............ Creating IRTSAserver Service Script
 echo [Unit] > /lib/systemd/system/IRTSAserver.service
 echo Description=IRTSA Socket Server Service >> /lib/systemd/system/IRTSAserver.service
 echo After=network.target >> /lib/systemd/system/IRTSAserver.service
@@ -128,11 +107,9 @@ echo  >> /lib/systemd/system/IRTSAserver.service
 echo [Install] >> /lib/systemd/system/IRTSAserver.service
 echo WantedBy=multi-user.target >> /lib/systemd/system/IRTSAserver.service
 wait
-echo ............... Enabling and Starting Services
-systemctl daemon-reload
+echo ............. Enabling and Starting Services
+systemctl daemon-reload > /dev/null 2>&1
 wait
-systemctl enable hostapd > /dev/null 2>&1
-systemctl start hostapd > /dev/null 2>&1
 systemctl enable dnsmasq > /dev/null 2>&1
 systemctl start dnsmasq > /dev/null 2>&1
 systemctl enable ssh > /dev/null 2>&1
@@ -142,16 +119,18 @@ systemctl start apache2 > /dev/null 2>&1
 systemctl enable IRTSAserver > /dev/null 2>&1
 systemctl start IRTSAserver > /dev/null 2>&1
 wait
+echo .............. Uninstalling GUI and Unecessary Packages
+apt-get remove --purge x11-common -y > /dev/null 2>&1
+apt-get autoremove -y > /dev/null 2>&1
 ln -fs /lib/systemd/system/getty@.service /etc/systemd/system/getty.target.wants/getty@tty1.service > /dev/null 2>&1
-wait
-echo ................ DONE!! REBOOTING IN 5 SECONDS
+echo ............... DONE!! REBOOTING IN 5 SECONDS
 sleep 1
-echo ................ DONE!! REBOOTING IN 4 SECONDS
+echo ............... DONE!! REBOOTING IN 4 SECONDS
 sleep 1
-echo ................ DONE!! REBOOTING IN 3 SECONDS
+echo ............... DONE!! REBOOTING IN 3 SECONDS
 sleep 1
-echo ................ DONE!! REBOOTING IN 2 SECONDS
+echo ............... DONE!! REBOOTING IN 2 SECONDS
 sleep 1
-echo "................ DONE!! IT'S GO TIME BOIII!!!!"
+echo "............... DONE!! IT'S GO TIME BOIII!!!!"
 sleep 1
 reboot
