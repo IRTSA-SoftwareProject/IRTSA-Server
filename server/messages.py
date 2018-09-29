@@ -1,9 +1,9 @@
 import json
 
 
-def message(name, data):
+def message(type, body):
     """ Returns a message in the form of a dictionary """
-    return json.dumps(dict(name=name, data=data))
+    return json.dumps(dict(type=type, body=body))
 
 
 def error_message(error_description):
