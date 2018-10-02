@@ -103,7 +103,9 @@ wait
 chown -R pi:pi demo
 mkdir scans
 wait
-mv IRTSA-Server-master/src/scans/* scans/
+mkdir scans/png
+wait
+mv IRTSA-Server-master/src/scans/* scans/png/
 wait
 chown -R pi:pi scans
 wait
