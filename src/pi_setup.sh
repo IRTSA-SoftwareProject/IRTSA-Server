@@ -121,6 +121,7 @@ wait
 mv IRTSA-Server-master/src/demo/* demo/
 wait
 chown -R pi:pi demo
+mkdir scans
 wait
 mv IRTSA-Server-master/src/scans/* scans/
 wait

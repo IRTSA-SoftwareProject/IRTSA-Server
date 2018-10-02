@@ -18,7 +18,7 @@ echo "|________________________________|"
 echo 
 echo 
 echo .. Installing required packages
-apt-get install dnsmasq hostapd apache2 python python3 build-essential tk-dev libncurses5-dev libncursesw5-dev libreadline6-dev libdb5.3-dev libgdbm-dev libsqlite3-dev libssl-dev libbz2-dev libexpat1-dev liblzma-dev zlib1g-dev libffi-dev -y > /dev/null 2>&1
+apt-get install dnsmasq hostapd apache2 build-essential tk-dev libncurses5-dev libncursesw5-dev libreadline6-dev libdb5.3-dev libgdbm-dev libsqlite3-dev libssl-dev libbz2-dev libexpat1-dev liblzma-dev zlib1g-dev libffi-dev -y > /dev/null 2>&1
 wait
 echo ... Python 3.7: Downloading Python 3.7
 wget https://www.python.org/ftp/python/3.7.0/Python-3.7.0.tar.xz > /dev/null 2>&1
@@ -101,6 +101,7 @@ wait
 mv IRTSA-Server-master/src/demo/* demo/
 wait
 chown -R pi:pi demo
+mkdir scans
 wait
 mv IRTSA-Server-master/src/scans/* scans/
 wait
