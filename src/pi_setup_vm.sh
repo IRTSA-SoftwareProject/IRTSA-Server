@@ -101,6 +101,11 @@ wait
 mv IRTSA-Server-master/src/demo/* demo/
 wait
 chown -R pi:pi demo
+wait
+mv IRTSA-Server-master/src/scans/* scans/
+wait
+chown -R pi:pi scans
+wait
 mkdir server
 wait
 mv IRTSA-Server-master/server/* server/
@@ -113,7 +118,9 @@ rm -rf IRTSA-Server-master
 rm -rf Python-3.7*
 
 echo ............... Installing required python libraries
-pip install imageio scipy > /dev/null 2>&1
+pip3.7 install imageio scipy > /dev/null 2>&1
+wait
+pip3.7 install numpy re > /dev/null 2>&1
 wait
 pip3.7 install Rx websockets > /dev/null 2>&1
 wait
