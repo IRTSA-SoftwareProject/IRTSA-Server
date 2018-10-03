@@ -5,6 +5,7 @@ from server.commands.ris_processing import file_io_thermal
 from server.commands.ris_processing import process_image
 import numpy
 import datetime
+import base64
 
 async def processScan(event):
     connection = event.connection
@@ -30,6 +31,10 @@ async def processScan(event):
                 print('Failed to save .png :(')
     await connection.send(message('scan_progress', {'percent': 100}))
     await connection.send(message('scan_complete', {'filename': '/irscans/' + time + '.png'}))
+    scanImg = open('/var/www/html/irscans/' + time + '.png', 'rb')
+    scan = base64.b64encode(scanImg.read())
+    scanImg.close()
+    await connection.send(message('scan_complete', {'completedScanImage': scan.decode('utf-8')}))
     print('Scan complete')
 
 
