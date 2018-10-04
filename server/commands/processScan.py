@@ -10,9 +10,7 @@ async def processScan(event):
     print('Running scan')
     #get current time to save scan
     time = datetime.datetime.now().strftime("%Y%m%d%H%M%S")
-    ris_processing.image_process_interface.process_image(connection.send, 'C:/PNG Dumps/Processing/'+time, 'Final Thermal Hotspot', 0, -1)
-    await connection.send(message('scan_progress', {'percent': 100}))
-    await connection.send(message('scan_complete', {'base64EncodedString': scan.decode('utf-8')}))
+    await image_process_interface.process_image(connection, '/var/www/html/irscans/' +time, 'Final Thermal Hotspot', 0, -1)
     print('Scan complete')
 
 
