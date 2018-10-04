@@ -63,25 +63,39 @@ Then run the script passing in an argument for the desired name of the saved fil
 
 - python read_ris.py filename
 
-## Running the websocket
+# Running the server without a Raspberry PI
 
 The mobile app connects to the server using a websocket. If you don't have access to a RaspberryPi, 
 you can run the code on a regular computer and get the mobile app to connect to that instead.
 
-Start your virtual environment. This is optional but makes it easier to use different python 
-versions in different projects. This command requires python3.7 to be installed on your system.
+## Creating a virtual environment
 
-    virtualenv -p  $(which python3) server
+This is entirely optional but makes it easier to use different python versions in different 
+projects. If you don't want to use a virtual environment, skip to "Installing packages". 
+
+You'll need to make sure you have virtualenv installed (`pip install virtualenv`). Then run:
     
-Install the required packages
+    virtualenv -p  $(which python3) venv
+    
+Then activate the virtualenv by running
+
+    ./venv/bin/activate
+    
+There are variations of the `activate` script if you use `csh` or `fish` instead of `bash`.
+    
+## Installing packages
 
     pip install -r requirements.txt
     
-Start the server. The server requires python3.7, if you created a virtual environment and it is 
+This will install all of the pip packages that you need.
+    
+## Start the server
+
+The server requires python3.7, if you created a virtual environment and it is 
 active, the python version would have been configured for you automatically. If not, you'll have to
-make sure `python --version` says 3.7 or try using `python3` in the command below.
+make sure `python3 --version` says 3.7. Then run this:
 
     python -m server
-    
+
 This should print out a message indicating that the server is running and the address to connect to 
 from the client.
