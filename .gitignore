@@ -8,3 +8,5 @@ venv/
 
 # IDEs
 .idea/
+.project
+.pydevproject
