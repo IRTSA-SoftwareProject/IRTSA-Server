@@ -18,12 +18,12 @@ if __name__ == '__main__':
     print('Reading file...')
     thermogram = ris_processing.file_io_thermal.open_png('/var/www/html/irscans/PNG' + time)
     
+    print('Stabilising image')
+    thermogram = ris_processing.stabilise_image.stabilise_image(thermogram)
+    
     print('Saving thermogram to .gif...')
     if not ris_processing.file_io_thermal.save_gif(thermogram, '/var/www/html/irscans/' + time + '.gif'):
         print('Failed to save .gif :(')
-    
-    print('Stabilising image')
-    thermogram = ris_processing.stabilise_image.stabilise_image(thermogram)
     
     print('Processing image...')
     #phasemap = ris_processing.process_image.process_image(thermogram, frame_length = 10, xStartSkip = 45, xEndSkip = 60, yStartSkip = 175)
