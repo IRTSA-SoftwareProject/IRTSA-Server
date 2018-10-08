@@ -21,7 +21,7 @@ if __name__ == '__main__':
         print('Failed to save .gif :(')
         
     print('Stabilising image')
-    thermogram = ris_processing.stabilise_image.stabilise_image(thermogram,10)
+    thermogram = ris_processing.stabilise_image.stabilise_image(thermogram)
     
     print('Saving  stabilised thermogram to .gif...')
     if not ris_processing.file_io_thermal.save_gif(thermogram, 'C:/PNG Dumps/Processing/out2.gif'):
