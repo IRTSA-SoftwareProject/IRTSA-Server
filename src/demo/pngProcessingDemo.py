@@ -14,7 +14,7 @@ import sys
 
 if __name__ == '__main__':
     print('Reading file...')
-    thermogram = ris_processing.file_io_thermal.open_png('C:/PNG Dumps/1cm-s Greyscale/0')
+    thermogram = ris_processing.file_io_thermal.open_png('C:\PNG Dumps\Final Thermal Hotspot/0')
     
     print('Saving thermogram to .gif...')
     if not ris_processing.file_io_thermal.save_gif(thermogram, 'C:/PNG Dumps/Processing/out.gif'):
