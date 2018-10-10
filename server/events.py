@@ -1,10 +1,10 @@
+import asyncio
 import json
+import traceback
 
-from rx.concurrency import AsyncIOScheduler
 from rx.subjects import Subject
 
 from .messages import error_message
-from .socket import connections
 
 events = Subject()
 
@@ -26,14 +26,21 @@ async def await_events(connection):
     while True:
         try:
             command_string = await connection.recv()
+            print('Received message', command_string)
             try:
                 command = json.loads(command_string)
-                await events.on_next(Event(connection, command))
-            except:
+                events.on_next(Event(connection, command))
+            except json.decoder.JSONDecodeError as json_exception:
+                print('Failed to pass json', json_exception)
                 await connection.send(error_message(f'Failed to pass json: {command_string}'))
-        except:
-            print('Connection dropped due to an error')
+            except:
+                print('Unknown error')
+                traceback.print_exc()
+        except Exception as exception:
+            print('Connection dropped due to an error', exception)
             break
 
 
-connections.subscribe_on(AsyncIOScheduler()).subscribe(await_events)
+def via_asyncio(fn):
+    """ Returns a lambda that calls an async fn on the main event loop """
+    return lambda event: asyncio.ensure_future(fn(event))

@@ -2,3 +2,5 @@ Rx==1.6.1
 websockets==6.0
 cv2==3.4.3
 intel-numpy==1.15.1
+scipy==1.1.0
+imageio==2.4.1

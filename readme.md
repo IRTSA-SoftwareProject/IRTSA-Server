@@ -1,19 +1,57 @@
 # IRTSA Server
 
-Note: This requires a RPI with a wifi card on it for the wireless access point aspect to work.
+The files located in this repository are setup scripts to setup a server in different test environments, the socket server files which are used for the android device to communicate with the Raspberry Pi server, and files used to process scans from sample data.
 
-## Installation
+**Features of the Server:**
+- Server runs as a default gateway and DHCP server.
+- Sets Raspberry Pi up as a wireless access point (on hardware only, does not work on a Virtual Machine).
+- Has a website where processed scans can be accessed via a web browser.
+- Can perform image processing of sample data stored on the server.
+- Hosts socket server which runs as a service in the background for two way communication to be performed between an Android application and the server.
 
-To setup the pi install rasbian stretch lite (no gui) from:
-- https://www.raspberrypi.org/downloads/raspbian/
+## Installation Instructions
 
-once installed download the pi_setup.sh script, make it executable then run it with the following commands:
+To setup the server follow the instructions for either a RPI 3/3B+ or Virtual Machine depending on your test environment
 
-- wget https://raw.githubusercontent.com/IRTSA-SoftwareProject/IRTSA-Server/master/src/pi_setup.sh
-- chmod +x pi_setup.sh
-- sudo ./pi_setup.sh
+### Raspberry Pi 3/3B+ Setup
 
-The raspberry pi will then be setup in access point mode and can be connected to with the IP address 10.0.0.1 either through a web browser or a ssh client (putty)
+Follow these steps in order to install and setup a Raspberry Pi as the IRTSA server:
+
+- Download the Rasbian Stretch Lite image from: https://downloads.raspberrypi.org/raspbian_lite_latest
+- Install this image onto a Raspberry Pi
+- Connect the Raspberry Pi to the internet through the **ethernet interface**.
+- Ensure there is internet connectivity by pinging a website such as `ping www.google.com`.
+- download the setup script with the command: `wget https://raw.githubusercontent.com/IRTSA-SoftwareProject/IRTSA-Server/master/src/pi_setup.sh`
+- Make the file executable with the command: `chmod +x pi_setup.sh`
+- Execute the script with the command: `sudo ./pi_setup.sh`
+
+This will setup the Raspberry Pi as in access point mode with the SSID of **rpi-AP** and password of **rpiAPpw1** and can be connected to with the IP address 10.0.0.1 either through a web browser or a ssh client (putty).
+
+
+### Virtual Machine Setup
+
+Follow these steps in order to install and setup a Virtual Machine as the IRTSA server:
+
+- Download the Debian Stretch with Raspberry Pi Desktop image from: https://downloads.raspberrypi.org/rpd_x86_latest
+- Create a new virtual machine with atleast 512MB of memory with networking set to NAT to connect to the internet
+- Install the iso that was downloaded.
+- Once installed Rasbian will be installed with a GUI.
+- Open the terminal by clicking the terminal icon on the taskbar at the top of the screen
+- Download the setup script with the command: `wget https://raw.githubusercontent.com/IRTSA-SoftwareProject/IRTSA-Server/master/src/pi_setup_vm.sh`
+- Make the file executable with the command: `chmod +x pi_setup_vm.sh`
+- Execute the script with the command: `sudo ./pi_setup_vm.sh`
+- The Virtual Machine will then reboot and be setup as a server.
+- Change the networking to Custom: vmnet1
+- Open the virtual network editor in VMware from Edit > Virtual Network Editor.
+- Ensure that the Host-Only radio box is checked and the Use Local DHCP check box is unticked.
+
+*The following are Optional steps to follow which are only to be used when wanting the Android SDK Emulator to communicate with the Virtual Machine*
+- Open your adapter settings on your host machine.
+- Disable any wireless or ethernet adapters that are not **VMware Network Adapter VMnet1** and ensure that VMnet1 is Enabled.
+- The VMnet 1 adapter will now get an IP address for the Virtual Machines DHCP server and the Emulator will be able to connect to the server with the IP 10.0.0.1.
+- **Note: Once communication is not needed reverse these optional steps by activating your Wireless and/or Ethernet Adapters for your host machine to connect to the internet again**
+
+This will setup a Virtual Machine to act as a Raspberry Pi server which will have the IP address of 10.0.0.1 which can be accessed by the Android SDK Emulator provided networking with the Virtual Network Editor in VMware has been setup correctly.
 
 ## Running the python script
 

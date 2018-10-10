@@ -1,9 +1,10 @@
 from server.messages import message
-from server.events import events, of_type
+from server.events import events, of_type, via_asyncio
 
 
 async def scan(event):
     connection = event.connection
+    print('Running scan')
     await connection.send(message('scan_progress', {'percent': 10}))
     await connection.send(message('scan_progress', {'percent': 30}))
     await connection.send(message('scan_progress', {'percent': 80}))
@@ -11,9 +12,10 @@ async def scan(event):
     await connection.send(message('scan_progress', {'percent': 95}))
     await connection.send(message('scan_progress', {'percent': 100}))
     await connection.send(message('scan_complete', {'filename': '/scans/123611232334.png'}))
+    print('Scan complete')
 
 
-events.filter(of_type('scan'))\
-    .subscribe(scan)
+events.filter(of_type('scan')) \
+    .subscribe(via_asyncio(scan))
 
 

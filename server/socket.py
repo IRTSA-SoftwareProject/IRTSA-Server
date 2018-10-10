@@ -1,17 +1,16 @@
 import websockets
 import socket
 
-from rx.subjects import Subject
+from .events import await_events
 
 
 port = 8765
 host = socket.gethostbyname(socket.gethostname())
-connections = Subject()
 
 
 async def on_connection(connection, path):
     """ Pushes new connections into the connections subject """
-    connections.on_next(connection)
+    await await_events(connection)
 
 
 def server():
