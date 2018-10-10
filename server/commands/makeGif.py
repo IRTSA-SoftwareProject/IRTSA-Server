@@ -5,16 +5,16 @@ import numpy
 import datetime
 import base64
 
-async def processScan(event):
+async def makeGif(event):
     connection = event.connection
-    print('Running scan')
+    print('Making gif')
     #get current time to save scan
     time = datetime.datetime.now().strftime("%Y%m%d%H%M%S")
-    await image_process_interface.process_image(connection, '/var/www/html/irscans/' +time, 'Final Thermal Hotspot', 0, -1)
-    print('Scan complete')
+    await image_process_interface.export_gif(connection, '/var/www/html/irscans/' +time, 'Final Thermal Hotspot')
+    print('Made gif')
 
 
-events.filter(of_type('processScan')) \
-    .subscribe(via_asyncio(processScan))
+events.filter(of_type('makeGif')) \
+    .subscribe(via_asyncio(makeGif))
 
 
