@@ -6,14 +6,17 @@ Processes thermgrams and returns the phase map.
 import scipy
 import numpy
 import warnings
+import ris_processing.stabilise_image
 warnings.filterwarnings('ignore')
 from math import ceil
 from scipy.optimize import curve_fit
 
-def process_image(thermogram, frame_length = -1, return_phase = 1,
+def process_image(thermogram, method_select = 0, frame_length = -1, return_phase = 1,
                   xStartSkip = 0, xEndSkip = 0, yStartSkip = 0, yEndSkip = 0):
     ''' Expects a thermogram as a u_int16 3D numpy multdimensional array where
-    each dimension is: [frame, row, column]. 
+    each dimension is: [frame, row, column].
+    Method_Select is to choose what form of processing to use what what stabilisation
+    to implement. 
     Frame_length sets the numbers of frames to use in FFT analysis, uses all frames
     by default.
     Return_phase controls what phase will be returned, 0 is always a blank map;
@@ -30,7 +33,21 @@ def process_image(thermogram, frame_length = -1, return_phase = 1,
     #Shrink the thermogram to the required size
     thermogram = thermogram[:, yStartSkip:yLength-yEndSkip, xStartSkip:xLength-xEndSkip]
     
-    return pulse_phase_thermography(thermogram, frame_length, 1)
+    if (method_select == 0):
+        thermogram = ris_processing.stabilise_image.stabilise_image(thermogram, frame_length)
+        return pulse_phase_thermography(thermogram, frame_length, 1)
+    if (method_select == 1):
+        return pulse_phase_thermography(thermogram, frame_length, 1)
+    if (method_select == 2):
+        thermogram = ris_processing.stabilise_image.stabilise_image(thermogram, frame_length)
+        return image_subtraction(thermogram, frame_length, 1)
+    if (method_select == 3):
+        return image_subtraction(thermogram, frame_length, 1)
+    if (method_select == 4):
+        thermogram = ris_processing.stabilise_image.stabilise_image(thermogram, frame_length)
+        return thermographic_signal_reconstruction(thermogram, frame_length, 1)
+    if (method_select == 5):
+        return thermographic_signal_reconstruction(thermogram, frame_length, 1)
 
 def pulse_phase_thermography(thermogram, frame_length = -1, return_phase = 1):
     ''' Expects a thermogram as a u_int16 3D numpy multdimensional array where

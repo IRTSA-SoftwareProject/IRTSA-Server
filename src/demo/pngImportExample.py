@@ -2,10 +2,8 @@
 # Example of using the ris_processing package
 # @author: James Moran edited by Casper Pikaar
 
-import ris_processing.read_ris
 import ris_processing.file_io_thermal
 import ris_processing.process_image
-import ris_processing.stabilise_image
 import numpy
 import sys
 
@@ -18,16 +16,16 @@ if __name__ == '__main__':
     print('Reading file...')
     thermogram = ris_processing.file_io_thermal.open_png('C:/PNG Dumps/FINAL HOTSPOT/0')
     
-    print('Stabilising image')
-    thermogram = ris_processing.stabilise_image.stabilise_image(thermogram, 20)
+    #print('Stabilising image')
+    #thermogram = ris_processing.stabilise_image.stabilise_image(thermogram, 20)
     
-    print('Saving thermogram to .gif...')
-    if not ris_processing.file_io_thermal.save_gif(thermogram, 'C:/PNG Dumps/Processing/outstable.gif'):
-        print('Failed to save .gif :(')
+    #print('Saving thermogram to .gif...')
+    #if not ris_processing.file_io_thermal.save_gif(thermogram, 'C:/PNG Dumps/Processing/outstable.gif'):
+    #    print('Failed to save .gif :(')
     
     print('Processing image...')
     #phasemap = ris_processing.process_image.process_image(thermogram, frame_length = 10, xStartSkip = 45, xEndSkip = 60, yStartSkip = 175)
-    phasemap = ris_processing.process_image.process_image(thermogram[:, :, :], frame_length = 20, xStartSkip = 0, xEndSkip = 0, yStartSkip = 0, yEndSkip = 0)
+    phasemap = ris_processing.process_image.process_image(thermogram[:, :, :], method_select = 2, frame_length = 25, xStartSkip = 0, xEndSkip = 0, yStartSkip = 0, yEndSkip = 0)
     
     print('Saving phasemap to .png...')
     if phasemap.shape[0] == 1: #Check if there is only one thermogram
