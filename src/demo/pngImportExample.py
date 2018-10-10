@@ -4,6 +4,7 @@
 
 import ris_processing.file_io_thermal
 import ris_processing.process_image
+import ris_processing.noise
 import numpy
 import sys
 
@@ -16,12 +17,13 @@ if __name__ == '__main__':
     print('Reading file...')
     thermogram = ris_processing.file_io_thermal.open_png('C:/PNG Dumps/FINAL HOTSPOT/0')
     
+    thermogram = ris_processing.noise.noisy("s&p", thermogram)
     #print('Stabilising image')
     #thermogram = ris_processing.stabilise_image.stabilise_image(thermogram, 20)
     
-    #print('Saving thermogram to .gif...')
-    #if not ris_processing.file_io_thermal.save_gif(thermogram, 'C:/PNG Dumps/Processing/outstable.gif'):
-    #    print('Failed to save .gif :(')
+    print('Saving thermogram to .gif...')
+    if not ris_processing.file_io_thermal.save_gif(thermogram, 'C:/PNG Dumps/Processing/outstable.gif'):
+        print('Failed to save .gif :(')
     
     print('Processing image...')
     #phasemap = ris_processing.process_image.process_image(thermogram, frame_length = 10, xStartSkip = 45, xEndSkip = 60, yStartSkip = 175)
