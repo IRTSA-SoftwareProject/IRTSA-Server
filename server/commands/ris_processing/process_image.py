@@ -6,7 +6,7 @@ Processes thermgrams and returns the phase map.
 import scipy
 import numpy
 import warnings
-import ris_processing.stabilise_image
+from . import stabilise_image
 warnings.filterwarnings('ignore')
 from math import ceil
 from scipy.optimize import curve_fit
