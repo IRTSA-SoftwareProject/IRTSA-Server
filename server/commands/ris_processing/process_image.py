@@ -6,6 +6,7 @@ Processes thermgrams and returns the phase map.
 import scipy
 import numpy
 import warnings
+from . import stabilise_image
 warnings.filterwarnings('ignore')
 from math import ceil
 from server.messages import message

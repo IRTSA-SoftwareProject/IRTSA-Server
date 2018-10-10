@@ -3,7 +3,7 @@
 # @author: James Moran
 
 from . import file_io_thermal
-from . import process_image_file
+from . import process_image as process_image_file
 from server.messages import message
 import asyncio
 import sys
@@ -16,7 +16,7 @@ async def process_image(connection, path_to_save, simulation_select, process_sel
     await connection.send(message('scan_progress', {'percent': 10}))
     
     print('Processing image...')
-    phasemap = process_image_file.process_image(thermogram, frame_length = frames_to_process, xStartSkip = 0, xEndSkip = 0, yStartSkip = 0)
+    phasemap = process_image_file.process_image(thermogram, method_select = 2, frame_length = 25, xStartSkip = 0, xEndSkip = 0, yStartSkip = 0, yEndSkip = 0)
 
     await connection.send(message('scan_progress', {'percent': 90}))
 
@@ -31,7 +31,7 @@ async def process_image(connection, path_to_save, simulation_select, process_sel
                 print('Failed to save .png :(')
                 await connection.send(message('error', {'Unable to save'}))
                 
-    scanImg = open(path_to_save + '.png', 'rb')
+    scanImg = open(path_to_save + '0002.png', 'rb')
     scan = base64.b64encode(scanImg.read())
     scanImg.close()
     await connection.send(message('scan_progress', {'percent': 100}))
