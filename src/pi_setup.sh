@@ -149,26 +149,28 @@ rm -rf Python-3.7*
 echo ................. Installing required python libraries: numpy
 pip3.7 install numpy
 wait
-echo ................. Installing required python libraries: imageio
-pip3.7 install imageio
-wait
-echo ................. Installing required python libraries: scipy
-pip3.7 install scipy
-wait
-echo ................. Installing required python libraries: re
-pip3.7 install re
+echo ................. Installing required python libraries: Rx
+pip3.7 install Rx
 wait
 echo ................. Installing required python libraries: websockets
 pip3.7 install websockets
 wait
-echo ................. Installing required python libraries: Rx
-pip3.7 install Rx
-wait
 echo ................. Installing required python libraries: asyncio
 pip3.7 install asyncio
 wait
-echo ................. Installing required python libraries: opencv
-pip3.7 install opencv-python
+echo ................. Installing required python libraries: imageio
+wget https://www.piwheels.org/simple/imageio/imageio-2.4.1-py3-none-any.whl#sha256=5ca28db43aa5fabb141e9890a8cfd97467716532be4d7af3e5a116df47a50285
+wait
+pip3.7 install *.whl
+wait
+rm *.whl
+wait
+wait
+# echo ................. Installing required python libraries: scipy
+# pip3.7 install scipy
+wait	
+# echo ................. Installing required python libraries: opencv
+# pip3.7 install opencv-python
 wait
 echo .................. Creating IRTSA Socket Server Service
 echo [Unit] > /lib/systemd/system/IRTSAserver.service
@@ -194,7 +196,7 @@ systemctl enable hostapd > /dev/null 2>&1
 systemctl enable dnsmasq > /dev/null 2>&1
 # systemctl start dnsmasq > /dev/null 2>&1
 systemctl enable ssh > /dev/null 2>&1
-# systemctl start ssh > /dev/null 2>&1
+systemctl start ssh > /dev/null 2>&1
 systemctl enable apache2 > /dev/null 2>&1
 # systemctl start apache2 > /dev/null 2>&1
 # systemctl enable IRTSAserver > /dev/null 2>&1
@@ -212,4 +214,4 @@ echo .................... DONE!! REBOOTING IN 2 SECONDS
 sleep 1
 echo ".................... DONE!! IT'S GO TIME BOIII!!!!"
 sleep 1
-reboot
+# reboot
