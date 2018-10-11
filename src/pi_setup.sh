@@ -19,7 +19,7 @@ echo "|________________________________|"
 echo 
 echo 
 echo .. Installing required packages
-apt-get install dnsmasq hostapd apache2 build-essential tk-dev libncurses5-dev libncursesw5-dev libreadline6-dev libdb5.3-dev libgdbm-dev libsqlite3-dev libssl-dev libbz2-dev libexpat1-dev liblzma-dev zlib1g-dev libffi-dev libsm6 -y > /dev/null 2>&1
+apt-get install dnsmasq hostapd apache2 build-essential tk-dev libncurses5-dev libncursesw5-dev libreadline6-dev libdb5.3-dev libgdbm-dev libsqlite3-dev libssl-dev libbz2-dev libexpat1-dev liblzma-dev zlib1g-dev libffi-dev -y > /dev/null 2>&1
 wait
 echo ... Python 3.7: Downloading Python 3.7
 wget https://www.python.org/ftp/python/3.7.0/Python-3.7.0.tar.xz > /dev/null 2>&1
@@ -140,17 +140,12 @@ rm master.zip
 rm -rf IRTSA-Server-master
 rm -rf Python-3.7*
 
-echo ................. Installing required python libraries: imageio
+echo ................. Installing required python libraries
 pip3.7 install imageio scipy > /dev/null 2>&1
 wait
-echo ................. Installing required python libraries: numpy
 pip3.7 install numpy re > /dev/null 2>&1
 wait
-echo ................. Installing required python libraries: websockets
 pip3.7 install Rx websockets asyncio > /dev/null 2>&1
-wait
-echo ................. Installing required python libraries: opencv
-pip3.7 install opencv-python > /dev/null 2>&1
 wait
 echo .................. Creating IRTSA Socket Server Service
 echo [Unit] > /lib/systemd/system/IRTSAserver.service
