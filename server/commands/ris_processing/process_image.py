@@ -40,6 +40,7 @@ def process_image(thermogram, method_select = 0, frame_length = -1, return_phase
         return pulse_phase_thermography(thermogram, frame_length, 1)
     if (method_select == 2):
         thermogram = stabilise_image.stabilise_image(thermogram, frame_length)
+
         return image_subtraction(thermogram, frame_length, 1)
     if (method_select == 3):
         return image_subtraction(thermogram, frame_length, 1)
