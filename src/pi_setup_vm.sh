@@ -18,9 +18,13 @@ echo "|________________________________|"
 echo 
 echo 
 echo .. Installing required packages
-apt-get update
+apt-get update > /dev/null 2>&1
 wait
-apt-get install dnsmasq hostapd apache2 build-essential tk-dev libncurses5-dev libncursesw5-dev libreadline6-dev libdb5.3-dev libgdbm-dev libsqlite3-dev libssl-dev libbz2-dev libexpat1-dev liblzma-dev zlib1g-dev libffi-dev libsm6 -y > /dev/null 2>&1
+apt-get install dnsmasq hostapd apache2 libsm6 -y > /dev/null 2>&1
+wait
+apt-get install build-essential tk-dev libncurses5-dev libncursesw5-dev libreadline6-dev libdb5.3-dev libgdbm-dev libsqlite3-dev libssl-dev libbz2-dev libexpat1-dev liblzma-dev zlib1g-dev libffi-dev -y > /dev/null 2&>1
+wait
+apt-get install libsm6 -y > /dev/null 2>&1
 wait
 echo ... Python 3.7: Downloading Python 3.7
 wget https://www.python.org/ftp/python/3.7.0/Python-3.7.0.tar.xz > /dev/null 2>&1
@@ -122,15 +126,14 @@ rm master.zip
 rm -rf IRTSA-Server-master
 rm -rf Python-3.7*
 
-
+echo ................. Installing required python libraries: numpy
+pip3.7 install numpy re > /dev/null 2>&1
+wait
 echo ................. Installing required python libraries: imageio
 pip3.7 install imageio > /dev/null 2>&1
 wait
 echo ................. Installing required python libraries: scipy
 pip3.7 install scipy > /dev/null 2>&1
-wait
-echo ................. Installing required python libraries: numpy
-pip3.7 install numpy re > /dev/null 2>&1
 wait
 echo ................. Installing required python libraries: re
 pip3.7 install re > /dev/null 2>&1
@@ -169,8 +172,8 @@ systemctl enable ssh > /dev/null 2>&1
 systemctl start ssh > /dev/null 2>&1
 systemctl enable apache2 > /dev/null 2>&1
 systemctl start apache2 > /dev/null 2>&1
-systemctl enable IRTSAserver > /dev/null 2>&1
-systemctl start IRTSAserver > /dev/null 2>&1
+# systemctl enable IRTSAserver > /dev/null 2>&1
+# systemctl start IRTSAserver > /dev/null 2>&1
 wait
 echo .................. Uninstalling GUI and Unecessary Packages
 apt-get remove --purge x11-common -y > /dev/null 2>&1

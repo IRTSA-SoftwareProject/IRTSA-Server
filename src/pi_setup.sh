@@ -146,20 +146,23 @@ rm master.zip
 rm -rf IRTSA-Server-master
 rm -rf Python-3.7*
 
+echo ................. Installing required python libraries: numpy
+pip3.7 install numpy
+wait
 echo ................. Installing required python libraries: imageio
 pip3.7 install imageio
 wait
 echo ................. Installing required python libraries: scipy
 pip3.7 install scipy
 wait
-echo ................. Installing required python libraries: numpy
-pip3.7 install numpy re
-wait
 echo ................. Installing required python libraries: re
 pip3.7 install re
 wait
 echo ................. Installing required python libraries: websockets
-pip3.7 install Rx websockets asyncio
+pip3.7 install websockets
+wait
+echo ................. Installing required python libraries: Rx
+pip3.7 install Rx
 wait
 echo ................. Installing required python libraries: asyncio
 pip3.7 install asyncio
