@@ -3,7 +3,7 @@
 # @author: James Moran
 
 from . import file_io_thermal
-from . import process_image as process_image_file
+from . import process_image_file
 from server.messages import message
 import asyncio
 import sys
@@ -31,7 +31,7 @@ async def process_image(connection, path_to_save, simulation_select, process_sel
                 print('Failed to save .png :(')
                 await connection.send(message('error', {'Unable to save'}))
                 
-    scanImg = open(path_to_save + '0002.png', 'rb')
+    scanImg = open(path_to_save + '.png', 'rb')
     scan = base64.b64encode(scanImg.read())
     scanImg.close()
     await connection.send(message('scan_progress', {'percent': 100}))
