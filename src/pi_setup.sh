@@ -143,25 +143,13 @@ rm master.zip
 rm -rf IRTSA-Server-master
 rm -rf Python-3.7*
 
-echo ................. Installing required python libraries: imageio
-pip3.7 install imageio > /dev/null 2>&1
+echo ................. Installing required python libraries
+pip3.7 install imageio scipy > /dev/null 2>&1
 wait
-echo ................. Installing required python libraries: scipy
-pip3.7 install scipy > /dev/null 2>&1
-wait
-echo ................. Installing required python libraries: numpy
 pip3.7 install numpy re > /dev/null 2>&1
 wait
-echo ................. Installing required python libraries: re
-pip3.7 install re > /dev/null 2>&1
-wait
-echo ................. Installing required python libraries: websockets
 pip3.7 install Rx websockets asyncio > /dev/null 2>&1
 wait
-echo ................. Installing required python libraries: asyncio
-pip3.7 install asyncio > /dev/null 2>&1
-wait
-echo ................. Installing required python libraries: opencv
 pip3.7 install opencv-python > /dev/null 2>&1
 wait
 echo .................. Creating IRTSA Socket Server Service

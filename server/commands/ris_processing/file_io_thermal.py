@@ -55,8 +55,7 @@ def open_png(file_name):
         filesList = os.listdir() #Just get files here
     
     firstImageFound = False #Var to track whether this is the first image
-    filesListSorted = sorted(filesList)
-    for f in filesListSorted:
+    for f in filesList:
         if f.startswith(file_name[slash_index+1:]):
             if not firstImageFound:
                 #Needs to track the first image so that the frame size can be extracted
@@ -70,7 +69,7 @@ def open_png(file_name):
                                                imageio.imread(path + '/' + f)[None,:,:]),
                                                axis = 0)
     
-    imageCube = _convert_to_u_int16(imageCube)
+    #imageCube = _convert_to_u_int16(imageCube)
 
     return imageCube
 

@@ -18,6 +18,8 @@ echo "|________________________________|"
 echo 
 echo 
 echo .. Installing required packages
+apt-get update
+wait
 apt-get install dnsmasq hostapd apache2 build-essential tk-dev libncurses5-dev libncursesw5-dev libreadline6-dev libdb5.3-dev libgdbm-dev libsqlite3-dev libssl-dev libbz2-dev libexpat1-dev liblzma-dev zlib1g-dev libffi-dev libsm6 -y > /dev/null 2>&1
 wait
 echo ... Python 3.7: Downloading Python 3.7
