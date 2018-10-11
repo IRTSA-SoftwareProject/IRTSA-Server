@@ -74,7 +74,7 @@ def stabilise_image(thermogram,frequency = -1):
         if transform is not None:
             transform = np.append(transform, [[0, 0, 1]], axis=0)
         if transform is None:
-            transform = transforms[i-1]
+            transform = transformed_frames[i-1]
         transformed_frames.append(transform)
         i = i+1
         
