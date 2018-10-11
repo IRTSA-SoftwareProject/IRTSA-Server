@@ -21,29 +21,32 @@ echo
 echo .. Installing required packages
 apt-get update
 wait
-apt-get install dnsmasq hostapd apache2 build-essential tk-dev libncurses5-dev libncursesw5-dev libreadline6-dev libdb5.3-dev libgdbm-dev libsqlite3-dev libssl-dev libbz2-dev libexpat1-dev liblzma-dev zlib1g-dev libffi-dev libsm6 -y > /dev/null 2>&1
+apt-get install dnsmasq hostapd apache2 -y
 wait
+apt-get install build-essential tk-dev libncurses5-dev libncursesw5-dev libreadline6-dev libdb5.3-dev libgdbm-dev libsqlite3-dev libssl-dev libbz2-dev libexpat1-dev liblzma-dev zlib1g-dev libffi-dev -y
+wait
+apt-get install libsm6 -y
 echo ... Python 3.7: Downloading Python 3.7
-wget https://www.python.org/ftp/python/3.7.0/Python-3.7.0.tar.xz > /dev/null 2>&1
+wget https://www.python.org/ftp/python/3.7.0/Python-3.7.0.tar.xz
 wait
-tar xf Python-3.7.0.tar.xz > /dev/null 2>&1
+tar xf Python-3.7.0.tar.xz
 wait
 cd Python-3.7.0/
 wait
 echo .... Python 3.7: Configuring Installation
-./configure --prefix=/usr/local/lib/python-3.7.0 > /dev/null 2>&1
+./configure --prefix=/usr/local/lib/python-3.7.0
 wait
-make > /dev/null 2>&1
+make
 wait
 echo ..... Python 3.7: Installing
-make install > /dev/null 2>&1
+make install
 wait
 echo ...... Python 3.7: Creating Symlinks
-ln -s /usr/local/lib/python-3.7.0/bin/pydoc3.7 /usr/bin/pydoc3.7 > /dev/null 2>&1
-ln -s /usr/local/lib/python-3.7.0/bin/python3.7 /usr/bin/python3.7 > /dev/null 2>&1
-ln -s /usr/local/lib/python-3.7.0/bin/python3.7m /usr/bin/python3.7m > /dev/null 2>&1
-ln -s /usr/local/lib/python-3.7.0/bin/pyvenv-3.7 /usr/bin/pyvenv-3.7 > /dev/null 2>&1
-ln -s /usr/local/lib/python-3.7.0/bin/pip3.7 /usr/bin/pip3.7 > /dev/null 2>&1
+ln -s /usr/local/lib/python-3.7.0/bin/pydoc3.7 /usr/bin/pydoc3.7
+ln -s /usr/local/lib/python-3.7.0/bin/python3.7 /usr/bin/python3.7
+ln -s /usr/local/lib/python-3.7.0/bin/python3.7m /usr/bin/python3.7m
+ln -s /usr/local/lib/python-3.7.0/bin/pyvenv-3.7 /usr/bin/pyvenv-3.7
+ln -s /usr/local/lib/python-3.7.0/bin/pip3.7 /usr/bin/pip3.7
 wait
 cd ..
 wait
@@ -113,11 +116,11 @@ echo "</body>" >> /var/www/html/index.html
 echo "</html>" >> /var/www/html/index.html
 wait
 echo .............. Downloading IRTSA Server and Demo
-wget https://github.com/IRTSA-SoftwareProject/IRTSA-Server/archive/master.zip > /dev/null 2>&1
+wget https://github.com/IRTSA-SoftwareProject/IRTSA-Server/archive/master.zip
 wait
 
 echo ............... Unzipping
-unzip master.zip > /dev/null 2>&1
+unzip master.zip
 wait
 mkdir demo
 wait
@@ -143,14 +146,26 @@ rm master.zip
 rm -rf IRTSA-Server-master
 rm -rf Python-3.7*
 
-echo ................. Installing required python libraries
-pip3.7 install imageio scipy > /dev/null 2>&1
+echo ................. Installing required python libraries: imageio
+pip3.7 install imageio
 wait
-pip3.7 install numpy re > /dev/null 2>&1
+echo ................. Installing required python libraries: scipy
+pip3.7 install scipy
 wait
-pip3.7 install Rx websockets asyncio > /dev/null 2>&1
+echo ................. Installing required python libraries: numpy
+pip3.7 install numpy re
 wait
-pip3.7 install opencv-python > /dev/null 2>&1
+echo ................. Installing required python libraries: re
+pip3.7 install re
+wait
+echo ................. Installing required python libraries: websockets
+pip3.7 install Rx websockets asyncio
+wait
+echo ................. Installing required python libraries: asyncio
+pip3.7 install asyncio
+wait
+echo ................. Installing required python libraries: opencv
+pip3.7 install opencv-python
 wait
 echo .................. Creating IRTSA Socket Server Service
 echo [Unit] > /lib/systemd/system/IRTSAserver.service
@@ -172,15 +187,15 @@ echo ................... Enabling and Starting Services
 systemctl daemon-reload
 wait
 systemctl enable hostapd > /dev/null 2>&1
-systemctl start hostapd > /dev/null 2>&1
+# systemctl start hostapd > /dev/null 2>&1
 systemctl enable dnsmasq > /dev/null 2>&1
-systemctl start dnsmasq > /dev/null 2>&1
+# systemctl start dnsmasq > /dev/null 2>&1
 systemctl enable ssh > /dev/null 2>&1
-systemctl start ssh > /dev/null 2>&1
+# systemctl start ssh > /dev/null 2>&1
 systemctl enable apache2 > /dev/null 2>&1
-systemctl start apache2 > /dev/null 2>&1
-systemctl enable IRTSAserver > /dev/null 2>&1
-systemctl start IRTSAserver > /dev/null 2>&1
+# systemctl start apache2 > /dev/null 2>&1
+# systemctl enable IRTSAserver > /dev/null 2>&1
+# systemctl start IRTSAserver > /dev/null 2>&1
 wait
 ln -fs /lib/systemd/system/getty@.service /etc/systemd/system/getty.target.wants/getty@tty1.service > /dev/null 2>&1
 wait
