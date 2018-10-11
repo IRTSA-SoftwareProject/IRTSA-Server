@@ -19,7 +19,7 @@ echo "|________________________________|"
 echo 
 echo 
 echo .. Installing required packages
-apt-get install dnsmasq hostapd apache2 build-essential tk-dev libncurses5-dev libncursesw5-dev libreadline6-dev libdb5.3-dev libgdbm-dev libsqlite3-dev libssl-dev libbz2-dev libexpat1-dev liblzma-dev zlib1g-dev libffi-dev -y > /dev/null 2>&1
+apt-get install dnsmasq hostapd apache2 build-essential tk-dev libncurses5-dev libncursesw5-dev libreadline6-dev libdb5.3-dev libgdbm-dev libsqlite3-dev libssl-dev libbz2-dev libexpat1-dev liblzma-dev zlib1g-dev libffi-dev libsm6 -y > /dev/null 2>&1
 wait
 echo ... Python 3.7: Downloading Python 3.7
 wget https://www.python.org/ftp/python/3.7.0/Python-3.7.0.tar.xz > /dev/null 2>&1
@@ -60,7 +60,7 @@ echo wpa=2 >> /etc/hostapd/hostapd.conf
 echo wpa_passphrase=rpiAPpw1 >> /etc/hostapd/hostapd.conf
 echo wpa_key_mgmt=WPA-PSK >> /etc/hostapd/hostapd.conf
 echo rsn_pairwise=CCMP >> /etc/hostapd/hostapd.conf
-
+wait
 echo ........ Configuring interfaces
 echo allow-hotplug wlan0 > /etc/network/interfaces
 echo iface wlan0 inet static >> /etc/network/interfaces
@@ -68,10 +68,10 @@ echo address 10.0.0.1 >> /etc/network/interfaces
 echo netmask 255.255.255.0 >> /etc/network/interfaces
 echo network 10.0.0.0 >> /etc/network/interfaces
 echo broadcast 10.0.0.255 >> /etc/network/interfaces
-
+wait
 echo ......... Editing dhcpcd.conf
 echo denyinterfaces wlan0 >> /etc/dhcpcd.conf
-
+wait
 echo .......... Configuring dnsmasq.conf
 echo "#define interface that clients connect to" >> /etc/dnsmasq.conf
 echo interface=wlan0 >> /etc/dnsmasq.conf
@@ -79,11 +79,12 @@ echo "#define server to use for dns" >> /etc/dnsmasq.conf
 echo server=10.0.0.1 >> /etc/dnsmasq.conf
 echo "#define lease IP range and lease duration" >> /etc/dnsmasq.conf
 echo dhcp-range=10.0.0.2,10.0.0.50,255.255.255.0,24h >> /etc/dnsmasq.conf
-
+wait
 echo ........... Creating irscans storage directory
 mkdir /var/www/html/irscans
 wait
 chown -R pi:pi /var/www/html/irscans
+wait
 echo ............ Editing apache2.conf
 echo "<Directory /var/www/html/irscans>" >> /etc/apache2/apache2.conf
 echo Options +Indexes +FollowSymLinks >> /etc/apache2/apache2.conf
@@ -91,7 +92,7 @@ echo AllowOverride None >> /etc/apache2/apache2.conf
 echo Require all granted >> /etc/apache2/apache2.conf
 echo ServerSignature Off >> /etc/apache2/apache2.conf
 echo "</Directory>" >> /etc/apache2/apache2.conf
-
+wait
 echo ............. Creating index.html
 echo "<!DOCTYPE html>" > /var/www/html/index.html
 echo "<html lang="en">" >> /var/www/html/index.html
@@ -108,7 +109,7 @@ echo "        <p>Infra-Red Scans are stored on this server for retrieval by the 
 echo "        <p>Images can be found in the irscans folder: <em><a href="/irscans">irscans</a></em></p>" >> /var/www/html/index.html
 echo "</body>" >> /var/www/html/index.html
 echo "</html>" >> /var/www/html/index.html
-
+wait
 echo .............. Downloading IRTSA Server and Demo
 wget https://github.com/IRTSA-SoftwareProject/IRTSA-Server/archive/master.zip > /dev/null 2>&1
 wait
@@ -140,12 +141,26 @@ rm master.zip
 rm -rf IRTSA-Server-master
 rm -rf Python-3.7*
 
-echo ................. Installing required python libraries
-pip3.7 install imageio scipy > /dev/null 2>&1
+echo ................. Installing required python libraries: imageio
+pip3.7 install imageio > /dev/null 2>&1
 wait
+echo ................. Installing required python libraries: scipy
+pip3.7 install scipy > /dev/null 2>&1
+wait
+echo ................. Installing required python libraries: numpy
 pip3.7 install numpy re > /dev/null 2>&1
 wait
+echo ................. Installing required python libraries: re
+pip3.7 install re > /dev/null 2>&1
+wait
+echo ................. Installing required python libraries: websockets
 pip3.7 install Rx websockets asyncio > /dev/null 2>&1
+wait
+echo ................. Installing required python libraries: asyncio
+pip3.7 install asyncio > /dev/null 2>&1
+wait
+echo ................. Installing required python libraries: opencv
+pip3.7 install opencv-python > /dev/null 2>&1
 wait
 echo .................. Creating IRTSA Socket Server Service
 echo [Unit] > /lib/systemd/system/IRTSAserver.service
