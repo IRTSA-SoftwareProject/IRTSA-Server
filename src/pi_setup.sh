@@ -16,8 +16,17 @@ echo  " ________________________________"
 echo "|                                |"
 echo "|        Setup RPI Script!       |"
 echo "|________________________________|"
+echo
 echo 
-echo 
+echo . Increasing Swap for Installation
+dd if=/dev/zero of=/var/swap.1 bs=1M count=1024
+wait
+mkswap /var/swap.1
+wait
+chmod 600 /var/swap.1
+wait
+swapon /var/swap.1
+wait 
 echo .. Installing required packages
 apt-get update
 wait
@@ -25,7 +34,10 @@ apt-get install dnsmasq hostapd apache2 -y
 wait
 apt-get install build-essential tk-dev libncurses5-dev libncursesw5-dev libreadline6-dev libdb5.3-dev libgdbm-dev libsqlite3-dev libssl-dev libbz2-dev libexpat1-dev liblzma-dev zlib1g-dev libffi-dev -y
 wait
-apt-get install libsm6 -y
+apt-get install libsm6 libjpeg9-dev -y
+wait
+apt-get install libopenblas-dev gcc gfortran -y
+wait
 echo ... Python 3.7: Downloading Python 3.7
 wget https://www.python.org/ftp/python/3.7.0/Python-3.7.0.tar.xz
 wait
@@ -159,15 +171,29 @@ echo ................. Installing required python libraries: asyncio
 pip3.7 install asyncio
 wait
 echo ................. Installing required python libraries: imageio
-wget https://www.piwheels.org/simple/imageio/imageio-2.4.1-py3-none-any.whl#sha256=5ca28db43aa5fabb141e9890a8cfd97467716532be4d7af3e5a116df47a50285
+wget https://www.piwheels.org/simple/imageio/imageio-2.4.1-py3-none-any.whl
 wait
 pip3.7 install *.whl
 wait
 rm *.whl
 wait
+echo ................. Installing required python libraries: scipy
+pip3.7 install Cython
 wait
-# echo ................. Installing required python libraries: scipy
-# pip3.7 install scipy
+wget https://github.com/scipy/scipy/releases/download/v1.1.0/scipy-1.1.0.tar.gz
+wait
+tar xzf scipy-1.1.0.tar.gz
+wait
+cd scipy
+wait
+python3.7 setup.py build
+wait
+python3.7 setup.py install
+wait
+cd ..
+wait
+rm scipy-1.1.0.tar.gz
+rm -rf scipy
 wait	
 # echo ................. Installing required python libraries: opencv
 # pip3.7 install opencv-python
@@ -196,13 +222,17 @@ systemctl enable hostapd > /dev/null 2>&1
 systemctl enable dnsmasq > /dev/null 2>&1
 # systemctl start dnsmasq > /dev/null 2>&1
 systemctl enable ssh > /dev/null 2>&1
-systemctl start ssh > /dev/null 2>&1
+systemctl start sshd > /dev/null 2>&1
 systemctl enable apache2 > /dev/null 2>&1
 # systemctl start apache2 > /dev/null 2>&1
 # systemctl enable IRTSAserver > /dev/null 2>&1
 # systemctl start IRTSAserver > /dev/null 2>&1
 wait
 ln -fs /lib/systemd/system/getty@.service /etc/systemd/system/getty.target.wants/getty@tty1.service > /dev/null 2>&1
+wait
+swapoff /var/swap.1
+wait
+rm /var/swap.1
 wait
 echo .................... DONE!! REBOOTING IN 5 SECONDS
 sleep 1
