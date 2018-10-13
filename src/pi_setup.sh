@@ -79,6 +79,7 @@ echo wpa_key_mgmt=WPA-PSK >> /etc/hostapd/hostapd.conf
 echo rsn_pairwise=CCMP >> /etc/hostapd/hostapd.conf
 wait
 echo ........ Configuring interfaces
+echo country=AU >> /etc/wpa_supplicant/wpa_supplicant.conf
 echo allow-hotplug wlan0 > /etc/network/interfaces
 echo iface wlan0 inet static >> /etc/network/interfaces
 echo address 10.0.0.1 >> /etc/network/interfaces
@@ -87,7 +88,11 @@ echo network 10.0.0.0 >> /etc/network/interfaces
 echo broadcast 10.0.0.255 >> /etc/network/interfaces
 wait
 echo ......... Editing dhcpcd.conf
-echo denyinterfaces wlan0 >> /etc/dhcpcd.conf
+echo "# profile static_wlan0" >> /etc/dhcpcd.conf
+echo interface wlan0 >> /etc/dhcpcd.conf
+echo static ip_address=10.0.0.1/24 >> /etc/dhcpcd.conf
+echo static routers=10.0.0.1 >> /etc/dhcpcd.conf
+echo static domain_name_servers=10.0.0.1 >> /etc/dhcpcd.conf
 wait
 echo .......... Configuring dnsmasq.conf
 echo "#define interface that clients connect to" >> /etc/dnsmasq.conf
@@ -180,11 +185,11 @@ wait
 echo ................. Installing required python libraries: scipy
 pip3.7 install Cython
 wait
-wget https://github.com/scipy/scipy/releases/download/v1.1.0/scipy-1.1.0.tar.gz
+wget https://github.com/scipy/scipy/releases/download/v1.0.1/scipy-1.0.1.tar.gz
 wait
-tar xzf scipy-1.1.0.tar.gz
+tar xzf scipy-1.0.1.tar.gz
 wait
-cd scipy
+cd scipy-1.0.1
 wait
 python3.7 setup.py build
 wait
