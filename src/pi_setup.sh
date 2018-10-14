@@ -274,7 +274,7 @@ wait
 # Remove Swap partition created for installation
 swapoff /var/swap.1 > /dev/null 2>&1
 wait
-rm /var/swap.1 > /dev/null 2>&1
+rm /var/swap.1
 wait
 echo .................... DONE!! REBOOTING IN 5 SECONDS
 sleep 1
