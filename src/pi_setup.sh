@@ -16,7 +16,7 @@ echo  " _________________________________"
 echo "|                                 |"
 echo "|        Setup RPI Script!        |"
 echo "|   Please wait as installation   |"
-echo "|      can take over 1 Hour.      |"
+echo "|      can take over 2 hours      |"
 echo "|_________________________________|"
 echo
 echo 
@@ -26,7 +26,7 @@ dd if=/dev/zero of=/var/swap.1 bs=1M count=1024 > /dev/null 2>&1
 wait
 mkswap /var/swap.1 > /dev/null 2>&1
 wait
-chmod 600 /var/swap.1 > /dev/null 2>&1
+chmod 600 /var/swap.1
 wait
 swapon /var/swap.1 > /dev/null 2>&1
 wait 
@@ -36,37 +36,37 @@ apt-get update > /dev/null 2>&1
 wait
 apt-get install dnsmasq hostapd apache2 -y > /dev/null 2>&1
 wait
-apt-get install build-essential tk-dev libncurses5-dev libncursesw5-dev libreadline6-dev libdb5.3-dev libgdbm-dev libsqlite3-dev libssl-dev libbz2-dev libexpat1-dev liblzma-dev zlib1g-dev libffi-dev -y
+apt-get install build-essential tk-dev libncurses5-dev libncursesw5-dev libreadline6-dev libdb5.3-dev libgdbm-dev libsqlite3-dev libssl-dev libbz2-dev libexpat1-dev liblzma-dev zlib1g-dev libffi-dev -y > /dev/null 2>&1
 wait
-apt-get install libsm6 libjpeg9-dev -y
+apt-get install libsm6 libjpeg9-dev -y > /dev/null 2>&1
 wait
-apt-get install libopenblas-dev gcc gfortran cmake -y
+apt-get install libopenblas-dev gcc gfortran cmake -y > /dev/null 2>&1
 wait
 echo ... Python 3.7: Downloading Python 3.7
 # Download source for python3.7
-wget https://www.python.org/ftp/python/3.7.0/Python-3.7.0.tar.xz
+wget https://www.python.org/ftp/python/3.7.0/Python-3.7.0.tar.xz > /dev/null 2>&1
 wait
-tar xf Python-3.7.0.tar.xz
+tar xf Python-3.7.0.tar.xz > /dev/null 2>&1
 wait
 cd Python-3.7.0/
 wait
 echo .... Python 3.7: Configuring Installation
 # Configure and make installer for python3.7
-./configure --prefix=/usr/local/lib/python-3.7.0
+./configure --prefix=/usr/local/lib/python-3.7.0 > /dev/null 2>&1
 wait
-make
+make > /dev/null 2>&1
 wait
 echo ..... Python 3.7: Installing
 # Install Python 3.7
-make install
+make install > /dev/null 2>&1
 wait
 echo ...... Python 3.7: Creating Symlinks
 # Create symlinks to execute python commands from cli
-ln -s /usr/local/lib/python-3.7.0/bin/pydoc3.7 /usr/bin/pydoc3.7
-ln -s /usr/local/lib/python-3.7.0/bin/python3.7 /usr/bin/python3.7
-ln -s /usr/local/lib/python-3.7.0/bin/python3.7m /usr/bin/python3.7m
-ln -s /usr/local/lib/python-3.7.0/bin/pyvenv-3.7 /usr/bin/pyvenv-3.7
-ln -s /usr/local/lib/python-3.7.0/bin/pip3.7 /usr/bin/pip3.7
+ln -s /usr/local/lib/python-3.7.0/bin/pydoc3.7 /usr/bin/pydoc3.7 > /dev/null 2>&1
+ln -s /usr/local/lib/python-3.7.0/bin/python3.7 /usr/bin/python3.7 > /dev/null 2>&1
+ln -s /usr/local/lib/python-3.7.0/bin/python3.7m /usr/bin/python3.7m > /dev/null 2>&1
+ln -s /usr/local/lib/python-3.7.0/bin/pyvenv-3.7 /usr/bin/pyvenv-3.7 > /dev/null 2>&1
+ln -s /usr/local/lib/python-3.7.0/bin/pip3.7 /usr/bin/pip3.7 > /dev/null 2>&1
 wait
 cd ..
 wait
@@ -161,7 +161,7 @@ echo .............. Downloading IRTSA Server and Demo
 wget https://github.com/IRTSA-SoftwareProject/IRTSA-Server/archive/master.zip
 wait
 echo ............... Unzipping
-unzip master.zip
+unzip master.zip > /dev/null 2>&1
 wait
 mkdir scans
 wait
@@ -184,38 +184,38 @@ rm -rf IRTSA-Server-master
 rm -rf Python-3.7*
 
 echo ................. Installing required python libraries: numpy
-pip3.7 install numpy
+pip3.7 install numpy > /dev/null 2>&1
 wait
 echo ................. Installing required python libraries: Rx
-pip3.7 install Rx
+pip3.7 install Rx > /dev/null 2>&1
 wait
 echo ................. Installing required python libraries: websockets
-pip3.7 install websockets
+pip3.7 install websockets > /dev/null 2>&1
 wait
 echo ................. Installing required python libraries: asyncio
-pip3.7 install asyncio
+pip3.7 install asyncio > /dev/null 2>&1
 wait
 echo ................. Installing required python libraries: imageio
 # Download and manually install imageio
-wget https://www.piwheels.org/simple/imageio/imageio-2.4.1-py3-none-any.whl
+wget https://www.piwheels.org/simple/imageio/imageio-2.4.1-py3-none-any.whl > /dev/null 2>&1
 wait
-pip3.7 install *.whl
+pip3.7 install *.whl > /dev/null 2>&1
 wait
 rm *.whl
 wait
 echo ................. Installing required python libraries: scipy
 # Download source for scipy and manually build and install
-pip3.7 install Cython
+pip3.7 install Cython > /dev/null 2>&1
 wait
-wget https://github.com/scipy/scipy/releases/download/v1.0.1/scipy-1.0.1.tar.gz
+wget https://github.com/scipy/scipy/releases/download/v1.0.1/scipy-1.0.1.tar.gz > /dev/null 2>&1
 wait
-tar xzf scipy-1.0.1.tar.gz
+tar xzf scipy-1.0.1.tar.gz > /dev/null 2>&1
 wait
 cd scipy-1.0.1
 wait
-python3.7 setup.py build
+python3.7 setup.py build > /dev/null 2>&1
 wait
-python3.7 setup.py install
+python3.7 setup.py install > /dev/null 2>&1
 wait
 cd ..
 wait
@@ -224,19 +224,19 @@ rm -rf scipy-1.0.1
 wait	
 echo ................. Installing required python libraries: opencv
 # Download source for opencv and manually build with cmake to install
-wget https://github.com/opencv/opencv/archive/3.4.3.zip -O opencv-3.4.3.zip
+wget https://github.com/opencv/opencv/archive/3.4.3.zip -O opencv-3.4.3.zip > /dev/null 2>&1
 wait
-unzip opencv-3.4.3.zip
+unzip opencv-3.4.3.zip > /dev/null 2>&1
 wait
 mkdir opencv-3.4.3/build
 wait
 cd opencv-3.4.3/build
 wait
-cmake -D CMAKE_BUILD_TYPE=Release -D CMAKE_INSTALL_PREFIX=/usr/local/lib/python-3.7.0/lib/ -D PYTHON3_EXECUTABLE=/usr/local/lib/python-3.7.0/bin/python3.7 -D BUILD_TESTS=OFF -D BUILD_PERF_TESTS=OFF -D BUILD_EXAMPLES=OFF -D WITH_OPENCL=OFF -D WITH_CUDA=OFF -D BUILD_opencv_gpu=OFF -D BUILD_opencv_gpuarithm=OFF -D BUILD_opencv_gpubgsegm=OFF -D BUILD_opencv_gpucodec=OFF -D BUILD_opencv_gpufeatures2d=OFF -D BUILD_opencv_gpufilters=OFF -D BUILD_opencv_gpuimgproc=OFF -D BUILD_opencv_gpulegacy=OFF -D BUILD_opencv_gpuoptflow=OFF -D BUILD_opencv_gpustereo=OFF -D BUILD_opencv_gpuwarping=OFF ..
+cmake -D CMAKE_BUILD_TYPE=Release -D CMAKE_INSTALL_PREFIX=/usr/local/lib/python-3.7.0/lib/ -D PYTHON3_EXECUTABLE=/usr/local/lib/python-3.7.0/bin/python3.7 -D BUILD_TESTS=OFF -D BUILD_PERF_TESTS=OFF -D BUILD_EXAMPLES=OFF -D WITH_OPENCL=OFF -D WITH_CUDA=OFF -D BUILD_opencv_gpu=OFF -D BUILD_opencv_gpuarithm=OFF -D BUILD_opencv_gpubgsegm=OFF -D BUILD_opencv_gpucodec=OFF -D BUILD_opencv_gpufeatures2d=OFF -D BUILD_opencv_gpufilters=OFF -D BUILD_opencv_gpuimgproc=OFF -D BUILD_opencv_gpulegacy=OFF -D BUILD_opencv_gpuoptflow=OFF -D BUILD_opencv_gpustereo=OFF -D BUILD_opencv_gpuwarping=OFF .. > /dev/null 2>&1
 wait
-make
+make > /dev/null 2>&1
 wait
-make install
+make install > /dev/null 2>&1
 wait
 cd ~
 wait
@@ -261,7 +261,7 @@ echo [Install] >> /lib/systemd/system/IRTSAserver.service
 echo WantedBy=multi-user.target >> /lib/systemd/system/IRTSAserver.service
 wait
 echo ................... Enabling Services
-systemctl daemon-reload
+systemctl daemon-reload > /dev/null 2>&1
 wait
 systemctl enable hostapd > /dev/null 2>&1
 systemctl enable dnsmasq > /dev/null 2>&1
