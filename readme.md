@@ -11,7 +11,8 @@ The files located in this repository are setup scripts to setup a server in diff
 
 ## Installation Instructions
 
-To setup the server follow the instructions for either a RPI 3/3B+ or Virtual Machine depending on your test environment
+To setup the server follow the instructions for either a RPI 3/3B+ or Virtual Machine depending on your test environment.
+*(Note: RPI 3B+ requires 5v 1.0A to power the device without errors occuring)*
 
 ### Raspberry Pi 3/3B+ Setup
 
@@ -19,7 +20,7 @@ Follow these steps in order to install and setup a Raspberry Pi as the IRTSA ser
 
 - Download the Rasbian Stretch Lite image from: https://downloads.raspberrypi.org/raspbian_lite_latest
 - Install this image onto a Raspberry Pi
-- Connect the Raspberry Pi to the internet through the **ethernet interface**.
+- Connect the Raspberry Pi to the internet through either the ethernet or wifi interface.
 - Ensure there is internet connectivity by pinging a website such as `ping www.google.com`.
 - download the setup script with the command: `wget https://raw.githubusercontent.com/IRTSA-SoftwareProject/IRTSA-Server/master/src/pi_setup.sh`
 - Make the file executable with the command: `chmod +x pi_setup.sh`
@@ -45,7 +46,7 @@ Follow these steps in order to install and setup a Virtual Machine as the IRTSA 
 - Open the virtual network editor in VMware from Edit > Virtual Network Editor.
 - Ensure that the Host-Only radio box is checked and the Use Local DHCP check box is unticked.
 
-*The following are Optional steps to follow which are only to be used when wanting the Android SDK Emulator to communicate with the Virtual Machine*
+*The following are Optional steps to follow which are only to be used when wanting the Android SDK Emulator to communicate with the Virtual Machine to emulate an environment with a RPI and Tablet*
 - Open your adapter settings on your host machine.
 - Disable any wireless or ethernet adapters that are not **VMware Network Adapter VMnet1** and ensure that VMnet1 is Enabled.
 - The VMnet 1 adapter will now get an IP address for the Virtual Machines DHCP server and the Emulator will be able to connect to the server with the IP 10.0.0.1.
