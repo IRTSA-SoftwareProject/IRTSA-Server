@@ -36,7 +36,7 @@ apt-get install build-essential tk-dev libncurses5-dev libncursesw5-dev libreadl
 wait
 apt-get install libsm6 libjpeg9-dev -y
 wait
-apt-get install libopenblas-dev gcc gfortran -y
+apt-get install libopenblas-dev gcc gfortran cmake -y
 wait
 echo ... Python 3.7: Downloading Python 3.7
 wget https://www.python.org/ftp/python/3.7.0/Python-3.7.0.tar.xz
@@ -62,6 +62,8 @@ ln -s /usr/local/lib/python-3.7.0/bin/pip3.7 /usr/bin/pip3.7
 wait
 cd ..
 wait
+echo hostname IRTSA-Controller > /etc/hostname
+wait
 echo "....... Configuring hostapd.conf (Wireless Access Point)"
 echo "#interface settings" > /etc/hostapd/hostapd.conf
 echo interface=wlan0 >> /etc/hostapd/hostapd.conf
@@ -72,11 +74,13 @@ echo ieee80211n=1 >> /etc/hostapd/hostapd.conf
 echo auth_algs=1 >> /etc/hostapd/hostapd.conf
 echo ignore_broadcast_ssid=0 >> /etc/hostapd/hostapd.conf
 echo "#AP settings" >> /etc/hostapd/hostapd.conf
-echo ssid=rpi-AP >> /etc/hostapd/hostapd.conf
+echo ssid=IRTSA-AP >> /etc/hostapd/hostapd.conf
 echo wpa=2 >> /etc/hostapd/hostapd.conf
-echo wpa_passphrase=rpiAPpw1 >> /etc/hostapd/hostapd.conf
+echo wpa_passphrase=Th3rmal >> /etc/hostapd/hostapd.conf
 echo wpa_key_mgmt=WPA-PSK >> /etc/hostapd/hostapd.conf
 echo rsn_pairwise=CCMP >> /etc/hostapd/hostapd.conf
+wait
+echo "DAEMON_CONF="/etc/hostapd/hostapd.conf"" >> /etc/default/hostapd
 wait
 echo ........ Configuring interfaces
 echo country=AU >> /etc/wpa_supplicant/wpa_supplicant.conf
@@ -200,8 +204,26 @@ wait
 rm scipy-1.1.0.tar.gz
 rm -rf scipy
 wait	
-# echo ................. Installing required python libraries: opencv
-# pip3.7 install opencv-python
+echo ................. Installing required python libraries: opencv
+wget https://github.com/opencv/opencv/archive/3.4.3.zip -O opencv-3.4.3.zip
+wait
+unzip opencv-3.4.3.zip
+wait
+mkdir opencv-3.4.3/build
+wait
+cd opencv-3.4.3/build
+wait
+cmake -D CMAKE_BUILD_TYPE=Release -D CMAKE_INSTALL_PREFIX=/usr/local/lib/python-3.7.0/lib/ -D PYTHON3_EXECUTABLE=/usr/local/lib/python-3.7.0/bin/python3.7 -D BUILD_TESTS=OFF -D BUILD_PERF_TESTS=OFF -D BUILD_EXAMPLES=OFF -D WITH_OPENCL=OFF -D WITH_CUDA=OFF -D BUILD_opencv_gpu=OFF -D BUILD_opencv_gpuarithm=OFF -D BUILD_opencv_gpubgsegm=OFF -D BUILD_opencv_gpucodec=OFF -D BUILD_opencv_gpufeatures2d=OFF -D BUILD_opencv_gpufilters=OFF -D BUILD_opencv_gpuimgproc=OFF -D BUILD_opencv_gpulegacy=OFF -D BUILD_opencv_gpuoptflow=OFF -D BUILD_opencv_gpustereo=OFF -D BUILD_opencv_gpuwarping=OFF ..
+wait
+make
+wait
+make install
+wait
+cd ~
+wait
+rm opencv-3.4.3.zip
+rm -rf opencv-3.4.3
+wait
 wait
 echo .................. Creating IRTSA Socket Server Service
 echo [Unit] > /lib/systemd/system/IRTSAserver.service
@@ -223,14 +245,14 @@ echo ................... Enabling and Starting Services
 systemctl daemon-reload
 wait
 systemctl enable hostapd > /dev/null 2>&1
-# systemctl start hostapd > /dev/null 2>&1
+systemctl start hostapd > /dev/null 2>&1
 systemctl enable dnsmasq > /dev/null 2>&1
-# systemctl start dnsmasq > /dev/null 2>&1
+systemctl start dnsmasq > /dev/null 2>&1
 systemctl enable ssh > /dev/null 2>&1
-systemctl start sshd > /dev/null 2>&1
+systemctl start ssh > /dev/null 2>&1
 systemctl enable apache2 > /dev/null 2>&1
-# systemctl start apache2 > /dev/null 2>&1
-# systemctl enable IRTSAserver > /dev/null 2>&1
+systemctl start apache2 > /dev/null 2>&1
+systemctl enable IRTSAserver > /dev/null 2>&1
 # systemctl start IRTSAserver > /dev/null 2>&1
 wait
 ln -fs /lib/systemd/system/getty@.service /etc/systemd/system/getty.target.wants/getty@tty1.service > /dev/null 2>&1
@@ -249,4 +271,4 @@ echo .................... DONE!! REBOOTING IN 2 SECONDS
 sleep 1
 echo ".................... DONE!! IT'S GO TIME BOIII!!!!"
 sleep 1
-# reboot
+reboot
