@@ -4,8 +4,8 @@
 # ( https://downloads.raspberrypi.org/raspbian_lite_latest ) 
 # installed and an internet connection via the rpi's ethernet
 # port.  After the script has run the RPI will be accessable as
-# a wireless access point with the SSID being "rpi-AP" and password
-# being "rpiAPpw1" and can be access with the IP address 10.0.0.1
+# a wireless access point with the SSID being "IRTSA-AP" and password
+# being "Th3rmal" and can be access with the IP address 10.0.0.1
 #
 if [ "$EUID" -ne 0 ]
   then echo "Please run as root by execution sudo ./pi_setup.sh"
