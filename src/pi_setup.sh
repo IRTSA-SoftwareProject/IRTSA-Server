@@ -86,7 +86,7 @@ echo ignore_broadcast_ssid=0 >> /etc/hostapd/hostapd.conf
 echo "#AP settings" >> /etc/hostapd/hostapd.conf
 echo ssid=IRTSA-AP >> /etc/hostapd/hostapd.conf
 echo wpa=2 >> /etc/hostapd/hostapd.conf
-echo wpa_passphrase=Th3rmal >> /etc/hostapd/hostapd.conf
+echo wpa_passphrase=Th3rmalHotspot >> /etc/hostapd/hostapd.conf
 echo wpa_key_mgmt=WPA-PSK >> /etc/hostapd/hostapd.conf
 echo rsn_pairwise=CCMP >> /etc/hostapd/hostapd.conf
 wait
@@ -232,7 +232,7 @@ mkdir opencv-3.4.3/build
 wait
 cd opencv-3.4.3/build
 wait
-cmake -D CMAKE_BUILD_TYPE=Release -D CMAKE_INSTALL_PREFIX=/usr/local/lib/python-3.7.0/lib/ -D PYTHON3_EXECUTABLE=/usr/local/lib/python-3.7.0/bin/python3.7 -D BUILD_TESTS=OFF -D BUILD_PERF_TESTS=OFF -D BUILD_EXAMPLES=OFF -D WITH_OPENCL=OFF -D WITH_CUDA=OFF -D BUILD_opencv_gpu=OFF -D BUILD_opencv_gpuarithm=OFF -D BUILD_opencv_gpubgsegm=OFF -D BUILD_opencv_gpucodec=OFF -D BUILD_opencv_gpufeatures2d=OFF -D BUILD_opencv_gpufilters=OFF -D BUILD_opencv_gpuimgproc=OFF -D BUILD_opencv_gpulegacy=OFF -D BUILD_opencv_gpuoptflow=OFF -D BUILD_opencv_gpustereo=OFF -D BUILD_opencv_gpuwarping=OFF .. > /dev/null 2>&1
+cmake -D CMAKE_BUILD_TYPE=Release -D CMAKE_INSTALL_PREFIX=/usr/local/lib/python-3.7.0/ -D PYTHON3_EXECUTABLE=/usr/local/lib/python-3.7.0/bin/python3.7 -D BUILD_TESTS=OFF -D BUILD_PERF_TESTS=OFF -D BUILD_EXAMPLES=OFF -D WITH_OPENCL=OFF -D WITH_CUDA=OFF -D BUILD_opencv_gpu=OFF -D BUILD_opencv_gpuarithm=OFF -D BUILD_opencv_gpubgsegm=OFF -D BUILD_opencv_gpucodec=OFF -D BUILD_opencv_gpufeatures2d=OFF -D BUILD_opencv_gpufilters=OFF -D BUILD_opencv_gpuimgproc=OFF -D BUILD_opencv_gpulegacy=OFF -D BUILD_opencv_gpuoptflow=OFF -D BUILD_opencv_gpustereo=OFF -D BUILD_opencv_gpuwarping=OFF .. > /dev/null 2>&1
 wait
 make > /dev/null 2>&1
 wait
@@ -247,7 +247,7 @@ echo .................. Creating IRTSA Socket Server Service
 # Create systemd script for the socket server to run on boot
 echo [Unit] > /lib/systemd/system/IRTSAserver.service
 echo Description=IRTSA Socket Server Service >> /lib/systemd/system/IRTSAserver.service
-echo After=network.target >> /lib/systemd/system/IRTSAserver.service
+echo After=hostapd.service >> /lib/systemd/system/IRTSAserver.service
 echo  >> /lib/systemd/system/IRTSAserver.service
 echo [Service] >> /lib/systemd/system/IRTSAserver.service
 echo User=pi >> /lib/systemd/system/IRTSAserver.service
@@ -268,8 +268,6 @@ systemctl enable dnsmasq > /dev/null 2>&1
 systemctl enable ssh > /dev/null 2>&1
 systemctl enable apache2 > /dev/null 2>&1
 systemctl enable IRTSAserver > /dev/null 2>&1
-wait
-ln -fs /lib/systemd/system/getty@.service /etc/systemd/system/getty.target.wants/getty@tty1.service > /dev/null 2>&1
 wait
 # Remove Swap partition created for installation
 swapoff /var/swap.1 > /dev/null 2>&1
