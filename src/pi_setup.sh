@@ -70,9 +70,6 @@ ln -s /usr/local/lib/python-3.7.0/bin/pip3.7 /usr/bin/pip3.7 > /dev/null 2>&1
 wait
 cd ..
 wait
-# Change hostname for microcontroller from default
-echo IRTSA-Controller > /etc/hostname
-wait
 echo "....... Configuring hostapd.conf (Wireless Access Point)"
 # Setup hostapd to allow the microcontroller to act as an Access Point
 echo "#interface settings" > /etc/hostapd/hostapd.conf
@@ -270,7 +267,11 @@ systemctl enable ssh > /dev/null 2>&1
 systemctl enable apache2 > /dev/null 2>&1
 systemctl enable IRTSAserver > /dev/null 2>&1
 wait
-echo .................... Updating Hosts File
+echo .................... Updating Hosts File and Hostname
+# Change hostname for microcontroller from default
+echo IRTSA-Controller > /etc/hostname
+wait
+# Create new hosts file
 echo "127.0.0.1       localhost" > /etc/hosts
 echo "::1             localhost ip6-localhost ip6-loopback" >> /etc/hosts
 echo "ff02::1         ip6-allnodes" >> /etc/hosts
