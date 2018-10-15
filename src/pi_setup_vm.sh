@@ -50,7 +50,8 @@ ln -s /usr/local/lib/python-3.7.0/bin/pip3.7 /usr/bin/pip3.7 > /dev/null 2>&1
 wait
 cd ..
 wait
-
+echo IRTSA-Controller > /etc/hostname
+wait
 echo ....... Configuring static IP for eth0
 echo "# profile static_eth0" >> /etc/dhcpcd.conf
 echo interface eth0 >> /etc/dhcpcd.conf
@@ -151,7 +152,7 @@ wait
 echo ................ Creating IRTSAserver Service Script
 echo [Unit] > /lib/systemd/system/IRTSAserver.service
 echo Description=IRTSA Socket Server Service >> /lib/systemd/system/IRTSAserver.service
-echo After=network.target >> /lib/systemd/system/IRTSAserver.service
+echo After=dhcpcd.service >> /lib/systemd/system/IRTSAserver.service
 echo  >> /lib/systemd/system/IRTSAserver.service
 echo [Service] >> /lib/systemd/system/IRTSAserver.service
 echo User=pi >> /lib/systemd/system/IRTSAserver.service
@@ -168,18 +169,17 @@ echo ................. Enabling and Starting Services
 systemctl daemon-reload > /dev/null 2>&1
 wait
 systemctl enable dnsmasq > /dev/null 2>&1
-systemctl start dnsmasq > /dev/null 2>&1
 systemctl enable ssh > /dev/null 2>&1
-systemctl start ssh > /dev/null 2>&1
 systemctl enable apache2 > /dev/null 2>&1
-systemctl start apache2 > /dev/null 2>&1
-# systemctl enable IRTSAserver > /dev/null 2>&1
-# systemctl start IRTSAserver > /dev/null 2>&1
+systemctl enable IRTSAserver > /dev/null 2>&1
 wait
 echo .................. Uninstalling GUI and Unecessary Packages
 apt-get remove --purge x11-common -y > /dev/null 2>&1
+wait
 apt-get autoremove -y > /dev/null 2>&1
+wait
 ln -fs /lib/systemd/system/getty@.service /etc/systemd/system/getty.target.wants/getty@tty1.service > /dev/null 2>&1
+wait
 echo ................... DONE!! REBOOTING IN 5 SECONDS
 sleep 1
 echo ................... DONE!! REBOOTING IN 4 SECONDS
