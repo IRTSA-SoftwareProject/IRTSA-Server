@@ -131,7 +131,13 @@ echo ................. Installing required python libraries: numpy
 pip3.7 install numpy > /dev/null 2>&1
 wait
 echo ................. Installing required python libraries: websockets
-pip3.7 install Rx websockets asyncio > /dev/null 2>&1
+pip3.7 install websockets > /dev/null 2>&1
+wait
+echo ................. Installing required python libraries: Rx
+pip3.7 install Rx asyncio > /dev/null 2>&1
+wait
+echo ................. Installing required python libraries: asyncio
+pip3.7 install asyncio > /dev/null 2>&1
 wait
 echo ................. Installing required python libraries: imageio
 pip3.7 install imageio > /dev/null 2>&1
@@ -152,7 +158,7 @@ wait
 echo ................ Creating IRTSAserver Service Script
 echo [Unit] > /lib/systemd/system/IRTSAserver.service
 echo Description=IRTSA Socket Server Service >> /lib/systemd/system/IRTSAserver.service
-echo After=dhcpcd.service >> /lib/systemd/system/IRTSAserver.service
+echo After=network.target >> /lib/systemd/system/IRTSAserver.service
 echo  >> /lib/systemd/system/IRTSAserver.service
 echo [Service] >> /lib/systemd/system/IRTSAserver.service
 echo User=pi >> /lib/systemd/system/IRTSAserver.service
@@ -171,7 +177,8 @@ wait
 systemctl enable dnsmasq > /dev/null 2>&1
 systemctl enable ssh > /dev/null 2>&1
 systemctl enable apache2 > /dev/null 2>&1
-systemctl enable IRTSAserver > /dev/null 2>&1
+# Disabled IRTSAserver to be able to check outputs on VM running it manually with python3.7 -m server
+# systemctl enable IRTSAserver > /dev/null 2>&1
 wait
 echo .................. Uninstalling GUI and Unecessary Packages
 apt-get remove --purge x11-common -y > /dev/null 2>&1

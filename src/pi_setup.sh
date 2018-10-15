@@ -158,7 +158,7 @@ echo "</html>" >> /var/www/html/index.html
 wait
 echo .............. Downloading IRTSA Server and Demo
 # Get server files to create socket server and perform scans
-wget https://github.com/IRTSA-SoftwareProject/IRTSA-Server/archive/master.zip
+wget https://github.com/IRTSA-SoftwareProject/IRTSA-Server/archive/master.zip > /dev/null 2>&1
 wait
 echo ............... Unzipping
 unzip master.zip > /dev/null 2>&1
@@ -232,13 +232,14 @@ mkdir opencv-3.4.3/build
 wait
 cd opencv-3.4.3/build
 wait
+# build opencv without GUI options, stating python version and installation directory.
 cmake -D CMAKE_BUILD_TYPE=Release -D CMAKE_INSTALL_PREFIX=/usr/local/lib/python-3.7.0/ -D PYTHON3_EXECUTABLE=/usr/local/lib/python-3.7.0/bin/python3.7 -D BUILD_TESTS=OFF -D BUILD_PERF_TESTS=OFF -D BUILD_EXAMPLES=OFF -D WITH_OPENCL=OFF -D WITH_CUDA=OFF -D BUILD_opencv_gpu=OFF -D BUILD_opencv_gpuarithm=OFF -D BUILD_opencv_gpubgsegm=OFF -D BUILD_opencv_gpucodec=OFF -D BUILD_opencv_gpufeatures2d=OFF -D BUILD_opencv_gpufilters=OFF -D BUILD_opencv_gpuimgproc=OFF -D BUILD_opencv_gpulegacy=OFF -D BUILD_opencv_gpuoptflow=OFF -D BUILD_opencv_gpustereo=OFF -D BUILD_opencv_gpuwarping=OFF .. > /dev/null 2>&1
 wait
 make > /dev/null 2>&1
 wait
 make install > /dev/null 2>&1
 wait
-cd ~
+cd /home/pi
 wait
 rm opencv-3.4.3.zip
 rm -rf opencv-3.4.3
@@ -269,19 +270,28 @@ systemctl enable ssh > /dev/null 2>&1
 systemctl enable apache2 > /dev/null 2>&1
 systemctl enable IRTSAserver > /dev/null 2>&1
 wait
+echo .................... Updating Hosts File
+echo "127.0.0.1       localhost" > /etc/hosts
+echo "::1             localhost ip6-localhost ip6-loopback" >> /etc/hosts
+echo "ff02::1         ip6-allnodes" >> /etc/hosts
+echo "ff02::2         ip6-allrouters" >> /etc/hosts
+echo  >> /etc/hosts
+echo "10.0.0.1        IRTSA-Controller" >> /etc/hosts
+wait
+echo ..................... Removing Swap Partition
 # Remove Swap partition created for installation
 swapoff /var/swap.1 > /dev/null 2>&1
 wait
 rm /var/swap.1
 wait
-echo .................... DONE!! REBOOTING IN 5 SECONDS
+echo ...................... DONE!! REBOOTING IN 5 SECONDS
 sleep 1
-echo .................... DONE!! REBOOTING IN 4 SECONDS
+echo ...................... DONE!! REBOOTING IN 4 SECONDS
 sleep 1
-echo .................... DONE!! REBOOTING IN 3 SECONDS
+echo ...................... DONE!! REBOOTING IN 3 SECONDS
 sleep 1
-echo .................... DONE!! REBOOTING IN 2 SECONDS
+echo ...................... DONE!! REBOOTING IN 2 SECONDS
 sleep 1
-echo ".................... DONE!! IT'S GO TIME BOIII!!!!"
+echo "...................... DONE!! IT'S GO TIME BOIII!!!!"
 sleep 1
 reboot
