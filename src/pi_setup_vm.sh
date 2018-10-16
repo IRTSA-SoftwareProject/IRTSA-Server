@@ -18,9 +18,13 @@ echo "|________________________________|"
 echo 
 echo 
 echo .. Installing required packages
-apt-get update
+apt-get update > /dev/null 2>&1
 wait
-apt-get install dnsmasq hostapd apache2 build-essential tk-dev libncurses5-dev libncursesw5-dev libreadline6-dev libdb5.3-dev libgdbm-dev libsqlite3-dev libssl-dev libbz2-dev libexpat1-dev liblzma-dev zlib1g-dev libffi-dev libsm6 -y > /dev/null 2>&1
+apt-get install dnsmasq hostapd apache2 libsm6 -y > /dev/null 2>&1
+wait
+apt-get install build-essential tk-dev libncurses5-dev libncursesw5-dev libreadline6-dev libdb5.3-dev libgdbm-dev libsqlite3-dev libssl-dev libbz2-dev libexpat1-dev liblzma-dev zlib1g-dev libffi-dev -y > /dev/null 2&>1
+wait
+apt-get install libsm6 -y > /dev/null 2>&1
 wait
 echo ... Python 3.7: Downloading Python 3.7
 wget https://www.python.org/ftp/python/3.7.0/Python-3.7.0.tar.xz > /dev/null 2>&1
@@ -46,7 +50,8 @@ ln -s /usr/local/lib/python-3.7.0/bin/pip3.7 /usr/bin/pip3.7 > /dev/null 2>&1
 wait
 cd ..
 wait
-
+echo IRTSA-Controller > /etc/hostname
+wait
 echo ....... Configuring static IP for eth0
 echo "# profile static_eth0" >> /etc/dhcpcd.conf
 echo interface eth0 >> /etc/dhcpcd.conf
@@ -122,22 +127,28 @@ rm master.zip
 rm -rf IRTSA-Server-master
 rm -rf Python-3.7*
 
-
+echo ................. Installing required python libraries: numpy
+pip3.7 install numpy > /dev/null 2>&1
+wait
+echo ................. Installing required python libraries: websockets
+pip3.7 install websockets > /dev/null 2>&1
+wait
+echo ................. Installing required python libraries: Rx
+pip3.7 install Rx asyncio > /dev/null 2>&1
+wait
+echo ................. Installing required python libraries: asyncio
+pip3.7 install asyncio > /dev/null 2>&1
+wait
 echo ................. Installing required python libraries: imageio
 pip3.7 install imageio > /dev/null 2>&1
 wait
 echo ................. Installing required python libraries: scipy
 pip3.7 install scipy > /dev/null 2>&1
 wait
-echo ................. Installing required python libraries: numpy
-pip3.7 install numpy re > /dev/null 2>&1
-wait
 echo ................. Installing required python libraries: re
 pip3.7 install re > /dev/null 2>&1
 wait
-echo ................. Installing required python libraries: websockets
-pip3.7 install Rx websockets asyncio > /dev/null 2>&1
-wait
+
 echo ................. Installing required python libraries: asyncio
 pip3.7 install asyncio > /dev/null 2>&1
 wait
@@ -164,18 +175,18 @@ echo ................. Enabling and Starting Services
 systemctl daemon-reload > /dev/null 2>&1
 wait
 systemctl enable dnsmasq > /dev/null 2>&1
-systemctl start dnsmasq > /dev/null 2>&1
 systemctl enable ssh > /dev/null 2>&1
-systemctl start ssh > /dev/null 2>&1
 systemctl enable apache2 > /dev/null 2>&1
-systemctl start apache2 > /dev/null 2>&1
-systemctl enable IRTSAserver > /dev/null 2>&1
-systemctl start IRTSAserver > /dev/null 2>&1
+# Disabled IRTSAserver to be able to check outputs on VM running it manually with python3.7 -m server
+# systemctl enable IRTSAserver > /dev/null 2>&1
 wait
 echo .................. Uninstalling GUI and Unecessary Packages
 apt-get remove --purge x11-common -y > /dev/null 2>&1
+wait
 apt-get autoremove -y > /dev/null 2>&1
+wait
 ln -fs /lib/systemd/system/getty@.service /etc/systemd/system/getty.target.wants/getty@tty1.service > /dev/null 2>&1
+wait
 echo ................... DONE!! REBOOTING IN 5 SECONDS
 sleep 1
 echo ................... DONE!! REBOOTING IN 4 SECONDS
