@@ -10,7 +10,8 @@ async def processScan(event):
     print('Running scan')
     #get current time to save scan
     time = datetime.datetime.now().strftime("%Y%m%d%H%M%S")
-    await image_process_interface.process_image(connection, '/var/www/html/irscans/' +time, 'Final Thermal Hotspot', 0, -1)
+     #The event object contains two parameters: .connection and .message; .connection contains a .send function that accepts a message, while .message is a dictionary containing the parameters sent from the app side.
+    await image_process_interface.process_image(connection, '/var/www/html/irscans/' +time, event.message['pngPath'], event.message['processingTechnique'], event.message['framesToProcess'])
     print('Scan complete')
 
 

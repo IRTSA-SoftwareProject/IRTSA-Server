@@ -162,9 +162,9 @@ unzip master.zip > /dev/null 2>&1
 wait
 mkdir scans
 wait
-mkdir scans/png
+mkdir "scans/png/Final Thermal Hotspot"
 wait
-mv IRTSA-Server-master/src/scans/* scans/png/
+mv IRTSA-Server-master/src/scans/* "scans/png/Final Thermal Hotspot"
 wait
 chown -R pi:pi scans
 wait
