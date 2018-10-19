@@ -12,7 +12,7 @@ from math import ceil
 from scipy.optimize import curve_fit
 
 def process_image(thermogram, method_select = 0, frame_length = -1, return_phase = 1,
-                  xStartSkip = 0, xEndSkip = 0, yStartSkip = 0, yEndSkip = 0):
+                  xStartSkip = 0, xEndSkip = 0, yStartSkip = 0, yEndSkip = 0, frame_start = 0):
     ''' Expects a thermogram as a u_int16 3D numpy multdimensional array where
     each dimension is: [frame, row, column].
     Method_Select is to choose what form of processing to use what what stabilisation
@@ -34,22 +34,22 @@ def process_image(thermogram, method_select = 0, frame_length = -1, return_phase
     thermogram = thermogram[:, yStartSkip:yLength-yEndSkip, xStartSkip:xLength-xEndSkip]
     
     if (method_select == 0):
-        thermogram = stabilise_image.stabilise_image(thermogram, frame_length)
-        return pulse_phase_thermography(thermogram, frame_length, 1)
+        thermogram = stabilise_image.stabilise_image(thermogram, frequency = frame_length, start_frame = frame_start)
+        return pulse_phase_thermography(thermogram)
     if (method_select == 1):
-        return pulse_phase_thermography(thermogram, frame_length, 1)
+        return pulse_phase_thermography(thermogram, frame_length, 1, frame_start = frame_start)
     if (method_select == 2):
-        thermogram = stabilise_image.stabilise_image(thermogram, frame_length)
-        return image_subtraction(thermogram, frame_length, 1)
+        thermogram = stabilise_image.stabilise_image(thermogram, frequency = frame_length, start_frame = frame_start)
+        return image_subtraction(thermogram)
     if (method_select == 3):
-        return image_subtraction(thermogram, frame_length, 1)
+        return image_subtraction(thermogram, frame_length, 1, frame_start = frame_start)
     if (method_select == 4):
-        thermogram = stabilise_image.stabilise_image(thermogram, frame_length)
-        return thermographic_signal_reconstruction(thermogram, frame_length, 1)
+        thermogram = stabilise_image.stabilise_image(thermogram, frequency = frame_length, start_frame = frame_start)
+        return thermographic_signal_reconstruction(thermogram)
     if (method_select == 5):
-        return thermographic_signal_reconstruction(thermogram, frame_length, 1)
+        return thermographic_signal_reconstruction(thermogram, frame_length, 1, frame_start = frame_start)
 
-def pulse_phase_thermography(thermogram, frame_length = -1, return_phase = 1):
+def pulse_phase_thermography(thermogram, frame_length = -1, return_phase = 1, frame_start = 0):
     ''' Expects a thermogram as a u_int16 3D numpy multdimensional array where
     each dimension is: [frame, row, column]. 
     Frame_length sets the numbers of frames to use in FFT analysis, uses all frames
@@ -65,62 +65,58 @@ def pulse_phase_thermography(thermogram, frame_length = -1, return_phase = 1):
     if (frame_length == -1) | (total_frames > total_frames):
         frame_length = total_frames
     
+    if (frame_start == -1) | (frame_start > total_frames):
+        frame_start = 0
+
     yLength = thermogram.shape[1]; #Note that y is before x; a carry over from 
     xLength = thermogram.shape[2]; # Matlab...
     
-    frame_index = 0 #Slice index
     #Preallocate phase maps
-    phasemap_count = ceil(total_frames/frame_length)
-    phasemap = numpy.zeros([phasemap_count, yLength, xLength], dtype = numpy.complex64)
+    phasemap = numpy.zeros([1, yLength, xLength], dtype = numpy.complex64)
     
-    #If the number of frames have been specified, loop over the fft until the entire
-    # thermogram has been analysed. 
-    for frame_index in range (0, phasemap_count):
-        #Perform the fft over the frame_index'th slice of the thermogram
-        fftmap = scipy.fft(thermogram[frame_index * frame_length :
-                                      (frame_index + 1) * frame_length, :, :],
-                                      n = frame_length, axis = 0)
-        phasemap[frame_index, :, :] = scipy.angle(fftmap[return_phase, :, :])
-        frame_index += 1
+    # Perform FFT over the range specified
+    fftmap = scipy.fft(thermogram[frame_start :
+                                  frame_start + frame_length, :, :],
+                                  axis = 0)
+    phasemap[0, :, :] = scipy.angle(fftmap[return_phase, :, :])
         
     return phasemap
 
-def image_subtraction(thermogram, frame_length = -1, return_phase = 0):
+def image_subtraction(thermogram, frame_length = -1, return_phase = 0, frame_start = 0):
     total_frames = thermogram.shape[0]
         
     #If the number of analysis frames hasn't been specified, use the total number
     if (frame_length == -1) | (total_frames > total_frames):
         frame_length = total_frames
+
+    if (frame_start == -1) | (frame_start > total_frames):
+        frame_start = 0
     
     yLength = thermogram.shape[1]; #Note that y is before x; a carry over from 
     xLength = thermogram.shape[2]; # Matlab...
     
-    frame_index = 0 #Slice index
     #Preallocate phase maps
-    contrast_count = ceil(total_frames/frame_length)
-    contrast_map = numpy.zeros([contrast_count, yLength, xLength], dtype = numpy.uint16)
+    contrast_map = numpy.zeros([1, yLength, xLength], dtype = numpy.uint16)
     
-    #If the number of frames have been specified, loop over the fft until the entire
-    # thermogram has been analysed. 
-    for frame_index in range (0, contrast_count):
-        # sum the subtraction across each frame
-        for frame in range(0, frame_length-1):
-             contrast_map[frame_index, :, :] += thermogram[frame_index*frame_length+frame] - thermogram[frame_index*frame_length+frame+1]
+    # sum the subtraction across each frame
+    for frame in range(frame_start, frame_start + frame_length):
+        contrast_map[0, :, :] += thermogram[frame] - thermogram[1]
                
-        frame_index += 1
-        
     return contrast_map
     
 def func(x, a, b, c, d, e):
     return a + b * numpy.power(numpy.log(x), 1)
 
-def thermographic_signal_reconstruction(thermogram, frame_length = -1, return_phase = 0):
+def thermographic_signal_reconstruction(thermogram, frame_length = -1, return_phase = 0, frame_start = 0):
     #Last argument is which argument to return
     total_frames = thermogram.shape[0]
         
     #If the number of analysis frames hasn't been specified, use the total number
     if (frame_length == -1) | (total_frames > total_frames):
         frame_length = total_frames
+
+    if (frame_start == -1) | (frame_start > total_frames):
+        frame_start = 0
     
     yLength = thermogram.shape[1]; #Note that y is before x; a carry over from 
     xLength = thermogram.shape[2]; # Matlab...
@@ -150,18 +146,3 @@ def thermographic_signal_reconstruction(thermogram, frame_length = -1, return_ph
         
     return coefficient_map
 
-'''
-popt, pcov = curve_fit(func, numpy.linspace(1, frame_length, frame_length),
-                                           numpy.round(numpy.array(thermogram[frame_index * frame_length :
-                                                      (frame_index + 1) * frame_length,
-                                                      0, 150]).ravel()), maxfev=100)
-                    
-popt, pcov = curve_fit(func, numpy.array(list(range(0, frame_length)), dtype = numpy.uint16),
-                                           scipy.ones(19), maxfev=100)
-
-popt, pcov = curve_fit(func, numpy.linspace(1, frame_length, frame_length),
-                                           scipy.ones([19]), maxfev=100)
-
-popt, pcov = curve_fit(func, numpy.array(list(range(0, frame_length)), dtype = numpy.uint16),
-                                           scipy.ones(19), maxfev=100)
-                                           '''

@@ -10,7 +10,7 @@ import sys
 import numpy
 import base64
 
-async def process_image(connection, path_to_save, simulation_select, process_select, frames_to_process = -1):
+async def process_image(connection, path_to_save, simulation_select, process_select, frames_to_process = -1, frame_start = -1):
     print('Reading file...')
     thermogram = file_io_thermal.open_png('/home/pi/scans/png/' + simulation_select + '/')
     await connection.send(message('scan_progress', {'percent': 10}))

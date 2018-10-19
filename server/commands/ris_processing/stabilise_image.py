@@ -7,7 +7,7 @@ import cv2
 import imageio
 import numpy as np
 
-def stabilise_image(thermogram,frequency = -1):
+def stabilise_image(thermogram, start_frame = 0, frequency = -1):
     ''' Expects a thermogram as a 3D numpy multdimensional array where
     each dimension is: [frame, row, column]. 
     '''
@@ -15,7 +15,9 @@ def stabilise_image(thermogram,frequency = -1):
     #if the input frequency is -1, set the frequency to the full range.
     if frequency == -1:
         frequency = thermogram.shape[0]
-    
+    if start_frame == -1: 
+        start_frame = 0
+ 
     #CV requires frames to be 8 bit map any numpy array to 8bit
     framesU8 = np.uint8(np.floor(np.real(thermogram)/np.max(thermogram)*255))
    
@@ -26,7 +28,9 @@ def stabilise_image(thermogram,frequency = -1):
     transformed_frames = [np.identity(3)]
     
     #if frequency is the whole span, create a global motion matrix
-    if frequency == thermogram.shape[0]:
+    #JPM-Edit: This seems to be causing a lot of issues, so I'm dummying this feature out for now... 20181020
+    #if frequency == thermogram.shape[0]:
+    if False:
         #create a translation matrix, this will remove everything except the translation of the t'form
         translation_matrix = np.array([[0,0,1],[0,0,1]])
         
@@ -54,9 +58,10 @@ def stabilise_image(thermogram,frequency = -1):
         frequency = thermogram.shape[0]
    
     #initialise frame 1
-    i = 1
-     
-    while i < len(thermogram):
+    i = start_frame + 1 #+1 because tracking must start from the second frame
+    print(start_frame)
+    print(frequency) 
+    while i < (start_frame + frequency):
 
         #get current frame (uint8)
         current_frame = framesU8[i]
@@ -66,21 +71,23 @@ def stabilise_image(thermogram,frequency = -1):
         previous_points, current_points = map(lambda corners: corners[status.ravel().astype(bool)], [previous_points, current_points])
         transform = cv2.estimateRigidTransform(previous_points, current_points, False)
         
-        if frequency == thermogram.shape[0]:
+        #JPM-Edit: Again, removing global transforms 20181020
+        #if frequency == thermogram.shape[0]:
             #take out the global transformation from the current transform
-            transform = np.subtract(transform,global_transform_matrix)            
+            #transform = np.subtract(transform,global_transform_matrix)            
         
         #append the transform onto the transforms.
         if transform is not None:
             transform = np.append(transform, [[0, 0, 1]], axis=0)
         if transform is None:
-            transform = transformed_frames[i-1]
+            transform = transformed_frames[-1]
         transformed_frames.append(transform)
         i = i+1
         
     #create a stabilised frames array and apply the transform to each frame in the image.
     stabilised_frames = []
     final_transform = np.identity(3)
+    thermogram = thermogram[start_frame:start_frame+frequency, :, :]
     for frame, transform, index in zip(thermogram, transformed_frames, range(len(thermogram))):
         transform = transform.dot(final_transform)
         if index % frequency == 0:
