@@ -19,5 +19,5 @@ deploy:
   local-dir: docs
   allow-empty-commit: true
   keep-history: true
-#  on:
-#    branch: master
+  on:
+    branch: master
