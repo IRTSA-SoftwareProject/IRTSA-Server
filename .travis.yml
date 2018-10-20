@@ -10,7 +10,7 @@ env:
    - secure: wKWI40sPM+Im9gUm9TRhLjuwdVh/Nfiwb4k1wIpgbos4SaKqeLYUEVDHan6m9/3cDFofUMNzWx242Mh0dAGLBCBMkm2oqo7mmvNSd+UfW43GKxJTkF8qUAjNV9HHIEbDOkE0PDKYTVZGWp9xyTBwFNxl9NRXQfosmoJbsGbuwJ6h7PbwVNSicClLyhrASNd56JRTJVn3+4vS60yoZ1jxQgJdZwBTh9U2ZF7nL6hRmEOlQl1Z90yyRjCA7wh3oqbAcjDz3Nv29ipXsFR+9jzu1so1X6FE3JxgerKK9jEWkpYJUmXcYAQ7v4M8Iin8nH9ajuklTHvre8IZadL9+ZALJTW2NMfcmywnJ0rhnqp1j5W6qVzh+8xBoKoLcvbcPe9L+mrj8Q9P0WIt2o8zNwWignoZyS9+YsyyL8aIdVsjfdbHYQfNv0ZJpWgAz2qJ6PcxXYwfkixTGO7ppW3gP+r5gLMEufANAINyDdtfftwNu4nSGzJTU68ZNudTI2IuDWy12kfV4zYHN0p1FAxyJJKIPePWQJwdWzfxvtLVd5Q4AJpM20JB0x+ccJlTdFaFjlDMft9huzIyQYrodVeuvDz6x8P0Lb/CPI3BL9THxNEDLr2b7kjne4u2/Ks8vVWyBAu1nAPUnuv8SdcIR3vdlb2D/5VKSqR/hqOS4OAzaTv5N1Q=
 
 script:
-  - (cd server && pycco -p -i -d ../docs **/*.py)
+  - (cd server && pycco -p -i -d ../docs $(find . -type f -iname '*.py'))
 
 deploy:
   provider: pages
