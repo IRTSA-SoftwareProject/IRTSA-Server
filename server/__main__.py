@@ -1,3 +1,8 @@
+"""This is the main entrypoint of the server. Start it by running `python -m server`.
+It starts the server and adds it to the global event loop which will continue to run until a
+KeyboardInterrupt is sent over the command line.
+"""
+
 import asyncio
 
 from server.socket import server

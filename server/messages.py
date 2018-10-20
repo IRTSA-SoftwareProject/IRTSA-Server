@@ -1,3 +1,5 @@
+"""A set of utility functions for creating messages"""
+
 import json
 
 

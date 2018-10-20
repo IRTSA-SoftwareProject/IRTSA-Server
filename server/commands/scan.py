@@ -1,3 +1,7 @@
+"""An example command that listens to the "scan" message from the client and pretends to do some
+processing. For the actual scan message, have a look at the processScan module.
+"""
+
 from server.messages import message
 from server.events import events, of_type, via_asyncio
 
