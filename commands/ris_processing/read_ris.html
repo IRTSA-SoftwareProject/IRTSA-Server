@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="content-type" content="text/html;charset=utf-8">
+  <title>read_ris.py</title>
+  <link rel="stylesheet" href="../../pycco.css">
+</head>
+<body>
+<div id='container'>
+  <div id="background"></div>
+  <div class='section'>
+    <div class='docs'><h1>read_ris.py</h1></div>
+  </div>
+  <div class='clearall'>
+  <div class='section' id='section-0'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-0'>#</a>
+      </div>
+      <p>Created on 11 Apr. 2018
+This module provides a method to read <em>.ris files into a numpy
+multidimensional array. Note that </em>.ris files are 16-bit per pixel.</p>
+<p>@author: James Moran</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">re</span>
+<span class="kn">import</span> <span class="nn">numpy</span>
+<span class="kn">import</span> <span class="nn">struct</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-1'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-1'>#</a>
+      </div>
+      <p>Read the metadata of the *.ris file. The metadata always appears first</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="k">def</span> <span class="nf">_get_metadata</span><span class="p">(</span><span class="nb">file</span><span class="p">):</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-2'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-2'>#</a>
+      </div>
+      <pre><code>in the *.ris file and has a very specific format. Thie method extracts
+the important parameters, namely the image width and height, and number
+of frames.
+</code></pre>
+<p>Get the file&rsquo;s meta data, assumes only one &ldquo;description&rdquo; field</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>    <span class="n">metadata</span> <span class="o">=</span> <span class="p">(</span><span class="nb">file</span><span class="o">.</span><span class="n">readline</span><span class="p">())</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span>
+    <span class="n">temp</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span>
+    <span class="k">while</span> <span class="s1">&#39;&lt;/description&gt;&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">temp</span><span class="p">:</span>
+        <span class="n">temp</span> <span class="o">=</span> <span class="nb">file</span><span class="o">.</span><span class="n">readline</span><span class="p">()</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span>
+        <span class="n">metadata</span> <span class="o">=</span> <span class="n">metadata</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">temp</span><span class="p">)</span>
+        <span class="k">if</span> <span class="s1">&#39;&lt;metaitem name=&quot;imageWidth&quot; value=&#39;</span> <span class="ow">in</span> <span class="nb">str</span><span class="p">(</span><span class="n">temp</span><span class="p">):</span>
+            <span class="n">width</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="s1">&#39;\d+&#39;</span><span class="p">,</span> <span class="n">temp</span><span class="p">)</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+        <span class="k">if</span> <span class="s1">&#39;&lt;metaitem name=&quot;imageHeight&quot; value=&#39;</span> <span class="ow">in</span> <span class="nb">str</span><span class="p">(</span><span class="n">temp</span><span class="p">):</span>
+            <span class="n">height</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="s1">&#39;\d+&#39;</span><span class="p">,</span> <span class="n">temp</span><span class="p">)</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+        <span class="k">if</span> <span class="s1">&#39;&lt;metaitem name=&quot;numberOfFrames&quot; value=&#39;</span> <span class="ow">in</span> <span class="nb">str</span><span class="p">(</span><span class="n">temp</span><span class="p">):</span>
+            <span class="n">frames</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="s1">&#39;\d+&#39;</span><span class="p">,</span> <span class="n">temp</span><span class="p">)</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-3'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-3'>#</a>
+      </div>
+      <p>The final &ldquo;</ris>&rdquo; is on the same line as the first data, so add it
+manually (it must follow the last &ldquo;</description>&ldquo;).</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>    <span class="n">metadata</span> <span class="o">=</span> <span class="n">metadata</span> <span class="o">+</span> <span class="nb">file</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="mi">6</span><span class="p">)</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-4'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-4'>#</a>
+      </div>
+      <p>Write start of data</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>    <span class="n">datastart</span> <span class="o">=</span> <span class="nb">file</span><span class="o">.</span><span class="n">tell</span><span class="p">()</span>
+    <span class="k">return</span> <span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">width</span><span class="p">),</span> <span class="nb">int</span><span class="p">(</span><span class="n">height</span><span class="p">),</span> <span class="nb">int</span><span class="p">(</span><span class="n">frames</span><span class="p">),</span> <span class="nb">int</span><span class="p">(</span><span class="n">datastart</span><span class="p">)]</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-5'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-5'>#</a>
+      </div>
+      <p>Unpacks a .ris file into a u_int16 3D numpy matrix in the format:</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="k">def</span> <span class="nf">get_thermogram</span><span class="p">(</span><span class="nb">file</span><span class="p">,</span> <span class="n">x_start</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">width</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="s1">&#39;inf&#39;</span><span class="p">),</span>
+                <span class="n">y_start</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">height</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="s1">&#39;inf&#39;</span><span class="p">),</span>
+                <span class="n">frame_start</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">frame_count</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="s1">&#39;inf&#39;</span><span class="p">)):</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-6'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-6'>#</a>
+      </div>
+      <pre><code>[frame, row, column]. _start arguments sets the pixel/frame to read from,
+width/height/frame_count sets how many bytes of each to read; useful to
+reduce the total data stored in memory by subsectioning the thermogram.
+</code></pre>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>    <span class="nb">file</span><span class="o">.</span><span class="n">seek</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-7'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-7'>#</a>
+      </div>
+      <p>Get_Metadata returns the frame width and height of the file being examined.
+The width, height, and frame count specified to be examined must be less
+than or equal to this value.</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>    <span class="p">[</span><span class="n">width_max</span><span class="p">,</span> <span class="n">height_max</span><span class="p">,</span> <span class="n">frame_count_max</span><span class="p">,</span> <span class="n">datastart</span><span class="p">]</span> <span class="o">=</span> <span class="n">_get_metadata</span><span class="p">(</span><span class="nb">file</span><span class="p">)</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-8'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-8'>#</a>
+      </div>
+      <p>If not specified, width, height, and frame count are set to infinite
+as the default call, so the value obtained from the metadata will
+always be smaller than this. The method also ensures the width and
+height are set to the maximum allowable values if set to greater than
+what is available.</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>    <span class="n">width</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">width</span><span class="p">,</span> <span class="n">width_max</span><span class="p">)</span>
+    <span class="n">height</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">height</span><span class="p">,</span> <span class="n">height_max</span><span class="p">)</span>
+    <span class="n">frame_count</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">frame_count</span><span class="p">,</span> <span class="n">frame_count_max</span><span class="p">)</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-9'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-9'>#</a>
+      </div>
+      <p>Ensure the start + size does not exceed the maximum. If it does, set it to
+the largest allowable within maximum.</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>    <span class="n">x_start</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">x_start</span><span class="o">+</span><span class="n">width</span><span class="p">,</span><span class="n">width_max</span><span class="p">)</span><span class="o">-</span><span class="n">width</span>
+    <span class="n">y_start</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">y_start</span><span class="o">+</span><span class="n">height</span><span class="p">,</span><span class="n">height_max</span><span class="p">)</span><span class="o">-</span><span class="n">height</span>
+    <span class="n">frame_start</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">frame_start</span><span class="o">+</span><span class="n">frame_count</span><span class="p">,</span><span class="n">frame_count_max</span><span class="p">)</span><span class="o">-</span><span class="n">frame_count</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-10'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-10'>#</a>
+      </div>
+      <p>Create storage space for the thermogram</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>    <span class="n">thermogram</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">zeros</span><span class="p">([</span><span class="n">frame_count</span><span class="p">,</span> <span class="n">height</span><span class="p">,</span> <span class="n">width</span><span class="p">],</span> <span class="n">dtype</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">uint16</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">current_frame</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">frame_start</span><span class="p">,</span> <span class="n">frame_start</span> <span class="o">+</span> <span class="n">frame_count</span><span class="p">):</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-11'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-11'>#</a>
+      </div>
+      <p>Locate the frame in the file
+The file is stored with each pixel stored as a 16-bit integer read left-to-right
+and top-to-bottom starting with the top left pixel. This means that the first x
+rows can be skipped if a size less than the frame height is specified. Same
+applies to the end of the file.</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>        <span class="k">for</span> <span class="n">current_row</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">y_start</span><span class="p">,</span> <span class="n">y_start</span> <span class="o">+</span> <span class="n">height</span><span class="p">):</span>
+            <span class="nb">file</span><span class="o">.</span><span class="n">seek</span><span class="p">(</span><span class="n">datastart</span> <span class="o">+</span> <span class="p">(</span><span class="n">width_max</span><span class="o">*</span><span class="n">height_max</span><span class="o">*</span><span class="n">current_frame</span> <span class="o">+</span> <span class="n">width_max</span><span class="o">*</span><span class="n">current_row</span> <span class="o">+</span> <span class="n">x_start</span><span class="p">)</span><span class="o">*</span><span class="mi">2</span><span class="p">)</span> <span class="c1"># Start of row, double because it is u_int16</span>
+            <span class="n">bytes_to_read</span> <span class="o">=</span> <span class="n">width</span><span class="o">*</span><span class="mi">2</span> <span class="c1"># Double because it is u_int16</span>
+            <span class="n">read_bytes</span> <span class="o">=</span> <span class="nb">file</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">bytes_to_read</span><span class="p">)</span>
+            <span class="n">read_bytes</span> <span class="o">=</span> <span class="n">struct</span><span class="o">.</span><span class="n">unpack</span><span class="p">(</span><span class="s1">&#39;H&#39;</span><span class="o">*</span><span class="nb">int</span><span class="p">(</span><span class="n">bytes_to_read</span><span class="o">/</span><span class="mi">2</span><span class="p">),</span><span class="n">read_bytes</span><span class="p">)</span> <span class="c1"># Convert bytes to u_int16</span>
+            <span class="n">thermogram</span><span class="p">[</span><span class="n">current_frame</span><span class="o">-</span><span class="n">frame_start</span><span class="p">,</span> <span class="n">current_row</span><span class="o">-</span><span class="n">y_start</span><span class="p">,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">read_bytes</span>
+
+    <span class="k">return</span> <span class="n">thermogram</span>
+
+</pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+</div>
+</body>

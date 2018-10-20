@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="content-type" content="text/html;charset=utf-8">
+  <title>noise.py</title>
+  <link rel="stylesheet" href="../../pycco.css">
+</head>
+<body>
+<div id='container'>
+  <div id="background"></div>
+  <div class='section'>
+    <div class='docs'><h1>noise.py</h1></div>
+  </div>
+  <div class='clearall'>
+  <div class='section' id='section-0'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-0'>#</a>
+      </div>
+      <p>https://stackoverflow.com/questions/14435632/impulse-gaussian-and-salt-and-pepper-noise-with-opencv</p>
+<p>image : ndarray
+    Input image data. Will be converted to float.
+mode : str
+    One of the following strings, selecting the type of noise to add:</p>
+<pre><code>'gauss'     Gaussian-distributed additive noise.
+'poisson'   Poisson-distributed noise generated from the data.
+'s&amp;p'       Replaces random pixels with 0 or 1.
+'speckle'   Multiplicative noise using out = image + n*image,where
+            n,is uniform noise with specified mean &amp; variance.
+</code></pre>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">cv2</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-1'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-1'>#</a>
+      </div>
+      
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="k">def</span> <span class="nf">noisy</span><span class="p">(</span><span class="n">noise_typ</span><span class="p">,</span><span class="n">image</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">noise_typ</span> <span class="o">==</span> <span class="s2">&quot;gauss&quot;</span><span class="p">:</span>
+            <span class="n">row</span><span class="p">,</span><span class="n">col</span><span class="p">,</span><span class="n">ch</span><span class="o">=</span> <span class="n">image</span><span class="o">.</span><span class="n">shape</span>
+            <span class="n">mean</span> <span class="o">=</span> <span class="mi">0</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-2'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-2'>#</a>
+      </div>
+      <p>var = 0.1
+sigma = var**0.5</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>            <span class="n">gauss</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="n">mean</span><span class="p">,</span><span class="mi">1</span><span class="p">,(</span><span class="n">row</span><span class="p">,</span><span class="n">col</span><span class="p">,</span><span class="n">ch</span><span class="p">))</span>
+            <span class="n">gauss</span> <span class="o">=</span> <span class="n">gauss</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">row</span><span class="p">,</span><span class="n">col</span><span class="p">,</span><span class="n">ch</span><span class="p">)</span>
+            <span class="n">noisy</span> <span class="o">=</span> <span class="n">image</span> <span class="o">+</span> <span class="n">gauss</span>
+            <span class="k">return</span> <span class="n">noisy</span>
+    <span class="k">elif</span> <span class="n">noise_typ</span> <span class="o">==</span> <span class="s2">&quot;s&amp;p&quot;</span><span class="p">:</span>
+        <span class="n">row</span><span class="p">,</span><span class="n">col</span><span class="p">,</span><span class="n">ch</span> <span class="o">=</span> <span class="n">image</span><span class="o">.</span><span class="n">shape</span>
+        <span class="n">s_vs_p</span> <span class="o">=</span> <span class="mf">0.5</span>
+        <span class="n">amount</span> <span class="o">=</span> <span class="mf">0.04</span>
+        <span class="n">out</span> <span class="o">=</span> <span class="n">image</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-3'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-3'>#</a>
+      </div>
+      <p>Salt mode</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>        <span class="n">num_salt</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ceil</span><span class="p">(</span><span class="n">amount</span> <span class="o">*</span> <span class="n">image</span><span class="o">.</span><span class="n">size</span> <span class="o">*</span> <span class="n">s_vs_p</span><span class="p">)</span>
+        <span class="n">coords</span> <span class="o">=</span> <span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">i</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="nb">int</span><span class="p">(</span><span class="n">num_salt</span><span class="p">))</span>
+                  <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">image</span><span class="o">.</span><span class="n">shape</span><span class="p">]</span>
+        <span class="n">out</span><span class="p">[</span><span class="n">coords</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-4'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-4'>#</a>
+      </div>
+      <p>Pepper mode</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>        <span class="n">num_pepper</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ceil</span><span class="p">(</span><span class="n">amount</span><span class="o">*</span> <span class="n">image</span><span class="o">.</span><span class="n">size</span> <span class="o">*</span> <span class="p">(</span><span class="mf">1.</span> <span class="o">-</span> <span class="n">s_vs_p</span><span class="p">))</span>
+        <span class="n">coords</span> <span class="o">=</span> <span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">i</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="nb">int</span><span class="p">(</span><span class="n">num_pepper</span><span class="p">))</span>
+                  <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">image</span><span class="o">.</span><span class="n">shape</span><span class="p">]</span>
+        <span class="n">out</span><span class="p">[</span><span class="n">coords</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">return</span> <span class="n">out</span>
+    <span class="k">elif</span> <span class="n">noise_typ</span> <span class="o">==</span> <span class="s2">&quot;poisson&quot;</span><span class="p">:</span>
+        <span class="n">vals</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">image</span><span class="p">))</span>
+        <span class="n">vals</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">**</span> <span class="n">np</span><span class="o">.</span><span class="n">ceil</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">log2</span><span class="p">(</span><span class="n">vals</span><span class="p">))</span>
+        <span class="n">noisy</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">poisson</span><span class="p">(</span><span class="n">image</span> <span class="o">*</span> <span class="n">vals</span><span class="p">)</span> <span class="o">/</span> <span class="nb">float</span><span class="p">(</span><span class="n">vals</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">noisy</span>
+    <span class="k">elif</span> <span class="n">noise_typ</span> <span class="o">==</span><span class="s2">&quot;speckle&quot;</span><span class="p">:</span>
+        <span class="n">row</span><span class="p">,</span><span class="n">col</span><span class="p">,</span><span class="n">ch</span> <span class="o">=</span> <span class="n">image</span><span class="o">.</span><span class="n">shape</span>
+        <span class="n">gauss</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="n">row</span><span class="p">,</span><span class="n">col</span><span class="p">,</span><span class="n">ch</span><span class="p">)</span>
+        <span class="n">gauss</span> <span class="o">=</span> <span class="n">gauss</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">row</span><span class="p">,</span><span class="n">col</span><span class="p">,</span><span class="n">ch</span><span class="p">)</span>
+        <span class="n">noisy</span> <span class="o">=</span> <span class="n">image</span> <span class="o">+</span> <span class="n">image</span> <span class="o">*</span> <span class="n">gauss</span>
+        <span class="k">return</span> <span class="n">noisy</span>
+
+</pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+</div>
+</body>

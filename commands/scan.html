@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="content-type" content="text/html;charset=utf-8">
+  <title>scan.py</title>
+  <link rel="stylesheet" href="../pycco.css">
+</head>
+<body>
+<div id='container'>
+  <div id="background"></div>
+  <div class='section'>
+    <div class='docs'><h1>scan.py</h1></div>
+  </div>
+  <div class='clearall'>
+  <div class='section' id='section-0'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-0'>#</a>
+      </div>
+      <p>An example command that listens to the &ldquo;scan&rdquo; message from the client and pretends to do some
+processing. For the actual scan message, have a look at the processScan module.</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">server.messages</span> <span class="kn">import</span> <span class="n">message</span>
+<span class="kn">from</span> <span class="nn">server.events</span> <span class="kn">import</span> <span class="n">events</span><span class="p">,</span> <span class="n">of_type</span><span class="p">,</span> <span class="n">via_asyncio</span>
+
+
+<span class="n">async</span> <span class="k">def</span> <span class="nf">scan</span><span class="p">(</span><span class="n">event</span><span class="p">):</span>
+    <span class="n">connection</span> <span class="o">=</span> <span class="n">event</span><span class="o">.</span><span class="n">connection</span>
+    <span class="k">print</span><span class="p">(</span><span class="s1">&#39;Running scan&#39;</span><span class="p">)</span>
+    <span class="n">await</span> <span class="n">connection</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">message</span><span class="p">(</span><span class="s1">&#39;scan_progress&#39;</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;percent&#39;</span><span class="p">:</span> <span class="mi">10</span><span class="p">}))</span>
+    <span class="n">await</span> <span class="n">connection</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">message</span><span class="p">(</span><span class="s1">&#39;scan_progress&#39;</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;percent&#39;</span><span class="p">:</span> <span class="mi">30</span><span class="p">}))</span>
+    <span class="n">await</span> <span class="n">connection</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">message</span><span class="p">(</span><span class="s1">&#39;scan_progress&#39;</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;percent&#39;</span><span class="p">:</span> <span class="mi">80</span><span class="p">}))</span>
+    <span class="n">await</span> <span class="n">connection</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">message</span><span class="p">(</span><span class="s1">&#39;scan_progress&#39;</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;percent&#39;</span><span class="p">:</span> <span class="mi">90</span><span class="p">}))</span>
+    <span class="n">await</span> <span class="n">connection</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">message</span><span class="p">(</span><span class="s1">&#39;scan_progress&#39;</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;percent&#39;</span><span class="p">:</span> <span class="mi">95</span><span class="p">}))</span>
+    <span class="n">await</span> <span class="n">connection</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">message</span><span class="p">(</span><span class="s1">&#39;scan_progress&#39;</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;percent&#39;</span><span class="p">:</span> <span class="mi">100</span><span class="p">}))</span>
+    <span class="n">await</span> <span class="n">connection</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">message</span><span class="p">(</span><span class="s1">&#39;scan_complete&#39;</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;filename&#39;</span><span class="p">:</span> <span class="s1">&#39;/scans/123611232334.png&#39;</span><span class="p">}))</span>
+    <span class="k">print</span><span class="p">(</span><span class="s1">&#39;Scan complete&#39;</span><span class="p">)</span>
+
+
+<span class="n">events</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">of_type</span><span class="p">(</span><span class="s1">&#39;scan&#39;</span><span class="p">))</span> \
+    <span class="o">.</span><span class="n">subscribe</span><span class="p">(</span><span class="n">via_asyncio</span><span class="p">(</span><span class="n">scan</span><span class="p">))</span>
+
+</pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+</div>
+</body>

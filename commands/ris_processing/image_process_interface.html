@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="content-type" content="text/html;charset=utf-8">
+  <title>image_process_interface.py</title>
+  <link rel="stylesheet" href="../../pycco.css">
+</head>
+<body>
+<div id='container'>
+  <div id="background"></div>
+  <div class='section'>
+    <div class='docs'><h1>image_process_interface.py</h1></div>
+  </div>
+  <div class='clearall'>
+  <div class='section' id='section-0'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-0'>#</a>
+      </div>
+      <p>Created on 04/10/2018
+Module to simplify interfacing with the processing scripts
+@author: James Moran</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">file_io_thermal</span>
+<span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">process_image</span> <span class="k">as</span> <span class="n">process_image_file</span>
+<span class="kn">from</span> <span class="nn">server.messages</span> <span class="kn">import</span> <span class="n">message</span>
+<span class="kn">import</span> <span class="nn">asyncio</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">import</span> <span class="nn">numpy</span>
+<span class="kn">import</span> <span class="nn">base64</span>
+
+<span class="n">async</span> <span class="k">def</span> <span class="nf">process_image</span><span class="p">(</span><span class="n">connection</span><span class="p">,</span> <span class="n">path_to_save</span><span class="p">,</span> <span class="n">simulation_select</span><span class="p">,</span> <span class="n">process_select</span><span class="p">,</span> <span class="n">frames_to_process</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="p">):</span>
+    <span class="k">print</span><span class="p">(</span><span class="s1">&#39;Reading file...&#39;</span><span class="p">)</span>
+    <span class="n">thermogram</span> <span class="o">=</span> <span class="n">file_io_thermal</span><span class="o">.</span><span class="n">open_png</span><span class="p">(</span><span class="s1">&#39;/home/pi/scans/png/&#39;</span><span class="p">)</span>
+    <span class="n">await</span> <span class="n">connection</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">message</span><span class="p">(</span><span class="s1">&#39;scan_progress&#39;</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;percent&#39;</span><span class="p">:</span> <span class="mi">10</span><span class="p">}))</span>
+    
+    <span class="k">print</span><span class="p">(</span><span class="s1">&#39;Processing image...&#39;</span><span class="p">)</span>
+    <span class="n">phasemap</span> <span class="o">=</span> <span class="n">process_image_file</span><span class="o">.</span><span class="n">process_image</span><span class="p">(</span><span class="n">thermogram</span><span class="p">,</span> <span class="n">method_select</span> <span class="o">=</span> <span class="mi">2</span><span class="p">,</span> <span class="n">frame_length</span> <span class="o">=</span> <span class="mi">25</span><span class="p">,</span> <span class="n">xStartSkip</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">xEndSkip</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">yStartSkip</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">yEndSkip</span> <span class="o">=</span> <span class="mi">0</span><span class="p">)</span>
+
+    <span class="n">await</span> <span class="n">connection</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">message</span><span class="p">(</span><span class="s1">&#39;scan_progress&#39;</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;percent&#39;</span><span class="p">:</span> <span class="mi">90</span><span class="p">}))</span>
+
+    <span class="k">print</span><span class="p">(</span><span class="s1">&#39;Saving phasemap to .png...&#39;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">phasemap</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span> <span class="c1">#Check if there is only one thermogram</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">file_io_thermal</span><span class="o">.</span><span class="n">save_png</span><span class="p">(</span><span class="n">phasemap</span><span class="p">,</span> <span class="n">path_to_save</span> <span class="o">+</span> <span class="s1">&#39;.png&#39;</span><span class="p">):</span>
+            <span class="k">print</span><span class="p">(</span><span class="s1">&#39;Failed to save .png :(&#39;</span><span class="p">)</span>
+            <span class="n">await</span> <span class="n">connection</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">message</span><span class="p">(</span><span class="s1">&#39;error&#39;</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;Unable to save&#39;</span><span class="p">}))</span>
+    <span class="k">else</span><span class="p">:</span> <span class="c1">#Save all thermograms if more than one was produced</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">phasemap</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="mi">1</span><span class="p">):</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">file_io_thermal</span><span class="o">.</span><span class="n">save_png</span><span class="p">(</span><span class="n">phasemap</span><span class="p">[</span><span class="n">i</span><span class="p">,:,:],</span> <span class="n">path_to_save</span> <span class="o">+</span> <span class="s1">&#39;{0:04d}&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;.png&#39;</span><span class="p">):</span>
+                <span class="k">print</span><span class="p">(</span><span class="s1">&#39;Failed to save .png :(&#39;</span><span class="p">)</span>
+                <span class="n">await</span> <span class="n">connection</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">message</span><span class="p">(</span><span class="s1">&#39;error&#39;</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;Unable to save&#39;</span><span class="p">}))</span>
+                
+    <span class="n">scanImg</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">path_to_save</span> <span class="o">+</span> <span class="s1">&#39;0002.png&#39;</span><span class="p">,</span> <span class="s1">&#39;rb&#39;</span><span class="p">)</span>
+    <span class="n">scan</span> <span class="o">=</span> <span class="n">base64</span><span class="o">.</span><span class="n">b64encode</span><span class="p">(</span><span class="n">scanImg</span><span class="o">.</span><span class="n">read</span><span class="p">())</span>
+    <span class="n">scanImg</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+    <span class="n">await</span> <span class="n">connection</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">message</span><span class="p">(</span><span class="s1">&#39;scan_progress&#39;</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;percent&#39;</span><span class="p">:</span> <span class="mi">100</span><span class="p">}))</span>
+    <span class="n">await</span> <span class="n">connection</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">message</span><span class="p">(</span><span class="s1">&#39;scan_complete&#39;</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;base64EncodedString&#39;</span><span class="p">:</span> <span class="n">scan</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s1">&#39;utf-8&#39;</span><span class="p">)}))</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-1'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-1'>#</a>
+      </div>
+      <p>TODO: find a way to send all .pngs if more than one was made, maybe gif, or can just do m ultiple files?</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>    <span class="k">print</span><span class="p">(</span><span class="s2">&quot;Done! Process Complete.&quot;</span><span class="p">)</span>
+
+
+<span class="n">async</span> <span class="k">def</span> <span class="nf">export_gif</span><span class="p">(</span><span class="n">connection</span><span class="p">,</span> <span class="n">path_to_save</span><span class="p">,</span> <span class="n">simulation_select</span><span class="p">):</span>
+    <span class="k">print</span><span class="p">(</span><span class="s1">&#39;Reading file...&#39;</span><span class="p">)</span>
+    <span class="n">thermogram</span> <span class="o">=</span> <span class="n">file_io_thermal</span><span class="o">.</span><span class="n">open_png</span><span class="p">(</span><span class="s1">&#39;/home/pi/scans/png/&#39;</span><span class="p">)</span>
+    <span class="n">await</span> <span class="n">connection</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">message</span><span class="p">(</span><span class="s1">&#39;export_progress&#39;</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;percent&#39;</span><span class="p">:</span> <span class="mi">50</span><span class="p">}))</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">file_io_thermal</span><span class="o">.</span><span class="n">save_gif</span><span class="p">(</span><span class="n">thermogram</span><span class="p">,</span> <span class="n">path_to_save</span> <span class="o">+</span> <span class="s1">&#39;.gif&#39;</span><span class="p">):</span>
+        <span class="k">print</span><span class="p">(</span><span class="s1">&#39;Failed to save .gif :(&#39;</span><span class="p">)</span>
+        <span class="n">await</span> <span class="n">connection</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">message</span><span class="p">(</span><span class="s1">&#39;error&#39;</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;Unable to save&#39;</span><span class="p">}))</span>
+    
+    <span class="n">scanImg</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">path_to_save</span> <span class="o">+</span> <span class="s1">&#39;.gif&#39;</span><span class="p">,</span> <span class="s1">&#39;rb&#39;</span><span class="p">)</span>
+    <span class="n">scan</span> <span class="o">=</span> <span class="n">base64</span><span class="o">.</span><span class="n">b64encode</span><span class="p">(</span><span class="n">scanImg</span><span class="o">.</span><span class="n">read</span><span class="p">())</span>
+    <span class="n">scanImg</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+    <span class="n">await</span> <span class="n">connection</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">message</span><span class="p">(</span><span class="s1">&#39;export_progress&#39;</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;percent&#39;</span><span class="p">:</span> <span class="mi">100</span><span class="p">}))</span>
+    <span class="n">await</span> <span class="n">connection</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">message</span><span class="p">(</span><span class="s1">&#39;exprot_complete&#39;</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;base64EncodedString&#39;</span><span class="p">:</span> <span class="n">scan</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s1">&#39;utf-8&#39;</span><span class="p">)}))</span>
+     
+
+    <span class="k">print</span><span class="p">(</span><span class="s2">&quot;Done! Process Complete.&quot;</span><span class="p">)</span>
+
+</pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+</div>
+</body>
