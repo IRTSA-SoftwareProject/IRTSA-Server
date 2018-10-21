@@ -9,7 +9,7 @@ import os
 async def getPngDir(event):
     connection = event.connection
     print(os.listdir('/home/pi/scans/png/'))
-    await connection.send(message('simulationList', os.listdir('/home/pi/scans/png/')))
+    await connection.send(message('simulationList', {'directories': os.listdir('/home/pi/scans/png/')} ))
 
 
 events.filter(of_type('getPngDir')) \
