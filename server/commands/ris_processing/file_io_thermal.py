@@ -7,6 +7,7 @@ import numpy
 import imageio
 import math
 import os
+import ris_processing.read_ris
 
 def _max_range(image):
     '''Scales the image such that the highest value is one and
@@ -40,11 +41,10 @@ def _convert_to_u_int16(image):
     image = numpy.uint16(numpy.floor(numpy.real(image)*65535/numpy.max(image)))
     return image
 
-def open_png(file_name):
-    ''' Expects to receive the base name of a file and finds all other files in the
-    file path that share the same start of the name. Assumes the files are listed
-    alphabetically in the directory.
-    '''
+def open_file(file_name):
+    '''Receives the folder leading either a set of .png or a .ris. It extracts the data
+    and returns it as numpy multi dim array. If more than one .ris is found, returns the
+    first one.'''
     
     #Check if a path was specified in the filename
     slash_index = file_name.rfind('/')
@@ -53,10 +53,28 @@ def open_png(file_name):
         filesList = os.listdir(path) #Get the list of files in this path
     else:
         filesList = os.listdir() #Just get files here
+        
+    #Check files until we find a .png or .ris
+    for f in filesList:
+        if (f.endswith(".png")):
+            return open_png(path, filesList)
+        elif (f.endswith(".ris")):
+            return ris_processing.read_ris.read_thermogram(path + f)
+        
+    
+
+def open_png(path, filesList):
+    ''' Expects to receive the base name of a file and finds all other files in the
+    file path that share the same start of the name. Assumes the files are listed
+    alphabetically in the directory.
+    '''
+    
+    imageCube = 0;
     
     firstImageFound = False #Var to track whether this is the first image
     for f in filesList:
-        if f.startswith(file_name[slash_index+1:]):
+        print (path + f)
+        if (f.endswith(".png")):
             if not firstImageFound:
                 #Needs to track the first image so that the frame size can be extracted
                 #Adds a dummy 0th dimension so it can be concatenated along axis = 0

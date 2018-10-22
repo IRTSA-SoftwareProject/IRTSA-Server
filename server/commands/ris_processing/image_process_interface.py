@@ -36,7 +36,7 @@ async def process_image(connection, path_to_save, simulation_select, process_sel
 
     print(method)
 
-    phasemap = process_image_file.process_image(thermogram, method_select = method, frame_length = frames_to_process, xStartSkip = 0, xEndSkip = 0, yStartSkip = 0, yEndSkip = 0)
+    phasemap = process_image_file.process_image(thermogram, method_select = method, frame_start = frame_start, frame_length = frames_to_process, xStartSkip = 0, xEndSkip = 0, yStartSkip = 0, yEndSkip = 0)
 
     await connection.send(message('scan_progress', {'percent': 90}))
 

@@ -81,3 +81,10 @@ def get_thermogram(file, x_start = 0, width = float('inf'),
             thermogram[current_frame-frame_start, current_row-y_start, :] = read_bytes
     
     return thermogram
+
+def read_thermogram(file):
+    f = open(file, 'rb')
+    thermogram = get_thermogram(f)
+    
+    f.close()
+    return thermogram
