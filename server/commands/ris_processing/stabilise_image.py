@@ -6,6 +6,7 @@ Stabilised a thermogram and returns a stabilised u_int16 3D numpy multdimensiona
 import cv2
 import imageio
 import numpy as np
+from . import file_io_thermal
 
 def stabilise_image(thermogram, frames_to_process = -1, start_frame = -1, global_motion = False):
     ''' Stabilises an input video as a 3D numpy array. Can use global motion to maintain a 
@@ -26,7 +27,7 @@ def stabilise_image(thermogram, frames_to_process = -1, start_frame = -1, global
     _frames_to_process = frames_to_process
  
     #CV requires frames to be 8 bit map any numpy array to 8bit
-    framesU8 = np.uint8(np.floor(np.real(thermogram)/np.max(thermogram)*255))
+    framesU8 = file_io_thermal._convert_to_u_int8(thermogram)
    
     #read the shape of the images
     height, width = thermogram[0].shape

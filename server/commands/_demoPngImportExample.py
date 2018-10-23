@@ -5,25 +5,24 @@ Example of using the ris_processing library to open and process a file.
 
 import ris_processing.file_io_thermal
 import ris_processing.process_image as process_image_file #this must be aliased, as the function shares the library name
-import ris_processing.noise
 import numpy
 import sys
 import os
 
 if __name__ == '__main__':
     print('Reading file...')
-    thermogram = ris_processing.file_io_thermal.open_file('../../src/scans/FINAL HOTSPOT/')
+    thermogram = ris_processing.file_io_thermal.open_file('../../src/scans/ris/')
     
     print('Stabilising image')
     
     # Use this line to save the output at any stage to a .gif for easy examination 
-    #ris_processing.file_io_thermal.save_gif(thermogram, '../../src/processing/sacn.gif')
+    # ris_processing.file_io_thermal.save_gif(thermogram, '../../src/processing/sacn.gif')
     
     # All the processing functionality is encapsulated in this function
     # Note that the phase map is stored in a numpy 3D array where the first dimension is the
     #  frame number
     phasemap = process_image_file.process_image(thermogram, method_select = 0,
-                                                frame_length = -1, return_phase = 1,
+                                                frames_to_process = -1, return_phase = 1,
                                                 xStartSkip = 0, xEndSkip = 0, yStartSkip = 0,
                                                 yEndSkip = 0, frame_start = 0)
     
