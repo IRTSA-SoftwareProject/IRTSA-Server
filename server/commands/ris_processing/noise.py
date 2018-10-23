@@ -1,4 +1,4 @@
-'''https://stackoverflow.com/questions/14435632/impulse-gaussian-and-salt-and-pepper-noise-with-opencv
+"""https://stackoverflow.com/questions/14435632/impulse-gaussian-and-salt-and-pepper-noise-with-opencv
 
 image : ndarray
     Input image data. Will be converted to float.
@@ -10,7 +10,7 @@ mode : str
     's&p'       Replaces random pixels with 0 or 1.
     'speckle'   Multiplicative noise using out = image + n*image,where
                 n,is uniform noise with specified mean & variance.
-'''
+"""
 
 import numpy as np
 import os
@@ -51,6 +51,6 @@ def noisy(noise_typ,image):
     elif noise_typ =="speckle":
         row,col,ch = image.shape
         gauss = np.random.randn(row,col,ch)
-        gauss = gauss.reshape(row,col,ch)        
+        gauss = gauss.reshape(row,col,ch)
         noisy = image + image * gauss
         return noisy
