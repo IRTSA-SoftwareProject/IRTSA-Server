@@ -1,19 +1,29 @@
-''' Created on 18 Sep. 2018
+''' Created on 18 Sep. 2018, last edited 23 Oct. 2018
 Stabilised a thermogram and returns a stabilised u_int16 3D numpy multdimensional array
-@author: Jayden Rautman
+@author: Jayden Rautman, edited by James Moran [jpmoran.pac@gmail.com]
 '''
 
 import cv2
 import imageio
 import numpy as np
 
-def stabilise_image(thermogram, start_frame = -1, frequency = -1, global_motion = False):
-    ''' Expects a thermogram as a 3D numpy multdimensional array where
+def stabilise_image(thermogram, frames_to_process = -1, start_frame = -1, global_motion = False):
+    ''' Stabilises an input video as a 3D numpy array. Can use global motion to maintain a 
+    single dimension of movement; useful for implementing DPPT.
+     
+    Expects a thermogram as a 3D numpy multdimensional array where
     each dimension is: [frame, row, column]. 
+    Frames_to_process sets the numbers of frames to use in FFT analysis, uses all frames
+    by default.
+    Frame_start is the first frame to process.
+    Return_phase controls what phase will be returned, 0 is always a blank map;
+    should almost always be 1.
+    Global_motion indicates whether global motion should be used
+    Returns an array in the format: [frame_index, row, column]
     '''
         
-    #Store original frequency, as it is changed later in the code
-    _frequency = frequency
+    #Store original frames_to_process, as it is changed later in the code
+    _frames_to_process = frames_to_process
  
     #CV requires frames to be 8 bit map any numpy array to 8bit
     framesU8 = np.uint8(np.floor(np.real(thermogram)/np.max(thermogram)*255))
@@ -24,9 +34,7 @@ def stabilise_image(thermogram, start_frame = -1, frequency = -1, global_motion 
     #set a transform matrix
     transformed_frames = [np.identity(3)]
     
-    #if frequency is the whole span, create a global motion matrix
-    #JPM-Edit: This seems to be causing a lot of issues, so I'm dummying this feature out for now... 20181020
-    #if frequency == thermogram.shape[0]:
+    #create a global motion matrix if specified
     if global_motion:
         #create a translation matrix, this will remove everything except the translation of the t'form
         translation_matrix = np.array([[0,0,1],[0,0,1]])
@@ -35,28 +43,28 @@ def stabilise_image(thermogram, start_frame = -1, frequency = -1, global_motion 
         global_transform = None;  
              
         while (global_transform is None):
-            #translation and frequency arrays which will be applied to get the global translation per frame
-            frequency_matrix = np.array([[1, frequency, frequency], [frequency, 1, frequency]])
+            #translation and frames_to_process arrays which will be applied to get the global translation per frame
+            frames_to_process_matrix = np.array([[1, frames_to_process, frames_to_process], [frames_to_process, 1, frames_to_process]])
             #used to find global motion, will instead take frame sizes
             #find global transformation
             #find points (good Features) on the final and current frames and map them
-            global_previous_points = cv2.goodFeaturesToTrack(framesU8[frequency-1], 100, 0.1, 1);
-            global_current_points, global_status, _ = cv2.calcOpticalFlowPyrLK(framesU8[0], framesU8[frequency-1], global_previous_points, np.array([]))
+            global_previous_points = cv2.goodFeaturesToTrack(framesU8[frames_to_process-1], 100, 0.1, 1);
+            global_current_points, global_status, _ = cv2.calcOpticalFlowPyrLK(framesU8[0], framesU8[frames_to_process-1], global_previous_points, np.array([]))
             global_previous_points, global_current_points = map(lambda corners: corners[global_status.ravel().astype(bool)], [global_previous_points, global_current_points])
             global_transform = cv2.estimateRigidTransform(global_previous_points, global_current_points, False)
             
-            #if global transform does not occur, take the 10 off the frequency
-            frequency = int(round(frequency - (frequency * 0.1)));
+            #if global transform does not occur, take the 10 off the frames_to_process
+            frames_to_process = int(round(frames_to_process - (frames_to_process * 0.1)));
             
     
-        #if global transform can be found, create global transform matrix and reset frequency
-        frequency_transform_matrix = np.divide(global_transform,frequency_matrix)
-        global_transform_matrix = np.multiply(frequency_transform_matrix,translation_matrix)
-        frequency = _frequency 
+        #if global transform can be found, create global transform matrix and reset frames_to_process
+        frames_to_process_transform_matrix = np.divide(global_transform,frames_to_process_matrix)
+        global_transform_matrix = np.multiply(frames_to_process_transform_matrix,translation_matrix)
+        frames_to_process = _frames_to_process 
    
     #initialise frame 1
     i = start_frame + 1 #+1 because tracking must start from the second frame
-    while i < (start_frame + frequency):
+    while i < (start_frame + frames_to_process):
 
         #get current frame (uint8)
         current_frame = framesU8[i]
@@ -66,8 +74,6 @@ def stabilise_image(thermogram, start_frame = -1, frequency = -1, global_motion 
         previous_points, current_points = map(lambda corners: corners[status.ravel().astype(bool)], [previous_points, current_points])
         transform = cv2.estimateRigidTransform(previous_points, current_points, False)
         
-        #JPM-Edit: Again, removing global transforms 20181020
-        #if frequency == thermogram.shape[0]:
         if global_motion:
             #take out the global transformation from the current transform
             transform = np.subtract(transform,global_transform_matrix)            
@@ -83,10 +89,10 @@ def stabilise_image(thermogram, start_frame = -1, frequency = -1, global_motion 
     #create a stabilised frames array and apply the transform to each frame in the image.
     stabilised_frames = []
     final_transform = np.identity(3)
-    thermogram = thermogram[start_frame:start_frame+frequency, :, :]
+    thermogram = thermogram[start_frame:start_frame+frames_to_process, :, :]
     for frame, transform, index in zip(thermogram, transformed_frames, range(len(thermogram))):
         transform = transform.dot(final_transform)
-        if index % frequency == 0:
+        if index % frames_to_process == 0:
             transform = np.identity(3)
         final_transform = transform
         inverse_transform = cv2.invertAffineTransform(transform[:2])

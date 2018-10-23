@@ -1,6 +1,7 @@
-''' Created on 12 Apr. 2018
-Saves thermograms obtained from read_ris as gifs and png files.
-@author: James Moran
+''' Created on 12 Apr. 2018, last edited 23 Oct. 2018
+Saves thermograms obtained from read_ris as gifs and png files
+Also reads in folders of .png files
+@author: James Moran [jpmoran.pac@gmail.com]
 '''
 
 import numpy
@@ -87,8 +88,6 @@ def open_png(path, filesList):
                 imageCube = numpy.concatenate((imageCube,
                                                imageio.imread(path + '/' + f)[None,:,:]),
                                                axis = 0)
-    
-    #imageCube = _convert_to_u_int16(imageCube)
 
     return imageCube
 
