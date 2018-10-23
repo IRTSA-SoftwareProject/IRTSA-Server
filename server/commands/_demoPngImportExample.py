@@ -14,7 +14,7 @@ import os
 
 if __name__ == '__main__':
     print('Reading file...')
-    thermogram = ris_processing.file_io_thermal.open_file('C:/PNG Dumps/ris_test/')
+    thermogram = ris_processing.file_io_thermal.open_file('C:/PNG Dumps/FINAL HOTSPOT/')
     
     #thermogram = ris_processing.noise.noisy("s&p", thermogram)
     
@@ -23,7 +23,7 @@ if __name__ == '__main__':
     
     #ris_processing.file_io_thermal.save_gif(thermogram, 'C:/PNG Dumps/Processing/stable.gif')
     
-    phasemap = process_image_file.process_image(thermogram, 0, frame_length = -1, frame_start = -1, xStartSkip = 0, xEndSkip = 0, yStartSkip = 0, yEndSkip = 0)
+    phasemap = process_image_file.process_image(thermogram, 1, frame_length = 20, frame_start = 0, xStartSkip = 0, xEndSkip = 0, yStartSkip = 0, yEndSkip = 0)
     
     print('Saving phasemap to .png...')
     if phasemap.shape[0] == 1: #Check if there is only one thermogram

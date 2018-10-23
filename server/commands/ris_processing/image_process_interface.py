@@ -12,7 +12,17 @@ import base64
 
 async def process_image(connection, path_to_save, simulation_select, process_select, frames_to_process = -1, frame_start = -1):
     print('Reading file...')
-    thermogram = file_io_thermal.open_png('/home/pi/scans/png/' + simulation_select + '/')
+    try:
+        thermogram = file_io_thermal.open_file('/home/pi/scans/png/' + simulation_select + '/')
+    except:
+        print('Unable to load file!')
+        scanImg = open('/home/pi/error/error.png', 'rb')
+        scan = base64.b64encode(scanImg.read())
+        scanImg.close()
+        await connection.send(message('scan_progress', {'percent': 100}))
+        await connection.send(message('scan_complete', {'base64EncodedString': scan.decode('utf-8')}))
+        return
+        
     await connection.send(message('scan_progress', {'percent': 10}))
     
     print('Processing image...')
@@ -36,7 +46,16 @@ async def process_image(connection, path_to_save, simulation_select, process_sel
 
     print(method)
 
-    phasemap = process_image_file.process_image(thermogram, method_select = method, frame_start = frame_start, frame_length = frames_to_process, xStartSkip = 0, xEndSkip = 0, yStartSkip = 0, yEndSkip = 0)
+    try:
+        phasemap = process_image_file.process_image(thermogram, method_select = method, frame_start = frame_start, frame_length = frames_to_process, xStartSkip = 0, xEndSkip = 0, yStartSkip = 0, yEndSkip = 0)
+    except:
+        print('Unable to process file!')
+        scanImg = open('/home/pi/error/error.png', 'rb')
+        scan = base64.b64encode(scanImg.read())
+        scanImg.close()
+        await connection.send(message('scan_progress', {'percent': 100}))
+        await connection.send(message('scan_complete', {'base64EncodedString': scan.decode('utf-8')}))
+        return
 
     await connection.send(message('scan_progress', {'percent': 90}))
 
@@ -44,18 +63,15 @@ async def process_image(connection, path_to_save, simulation_select, process_sel
     if phasemap.shape[0] == 1: #Check if there is only one thermogram
         if not file_io_thermal.save_png(phasemap, path_to_save + '.png'):
             print('Failed to save .png :(')
-            await connection.send(message('error', {'Unable to save'}))
     else: #Save first thermogram if more than one was produced
         if not file_io_thermal.save_png(phasemap[0,:,:], path_to_save + '.png'):
             print('Failed to save.png :(')
-            await connection.send(message('error', {'Unable to save'}))
 
     scanImg = open(path_to_save + '.png', 'rb')
     scan = base64.b64encode(scanImg.read())
     scanImg.close()
     await connection.send(message('scan_progress', {'percent': 100}))
     await connection.send(message('scan_complete', {'base64EncodedString': scan.decode('utf-8')}))
-    #TODO: find a way to send all .pngs if more than one was made, maybe gif, or can just do m ultiple files?
 
     print("Done! Process Complete.")
 

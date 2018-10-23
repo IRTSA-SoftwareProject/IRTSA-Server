@@ -45,7 +45,7 @@ def process_image(thermogram, method_select = 0, frame_length = -1, return_phase
         frame_length = total_frames - frame_start
     
     if (method_select == 0):
-        #thermogram = stabilise_image.stabilise_image(thermogram, frequency = frame_length, start_frame = frame_start, global_motion = False)
+        thermogram = stabilise_image.stabilise_image(thermogram, frequency = frame_length, start_frame = frame_start, global_motion = False)
         return pulse_phase_thermography(thermogram, frame_length = frame_length)
     if (method_select == 1):
         thermogram = stabilise_image.stabilise_image(thermogram, frequency = frame_length, start_frame = frame_start, global_motion = True)

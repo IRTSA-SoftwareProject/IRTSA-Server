@@ -7,7 +7,7 @@ import numpy
 import imageio
 import math
 import os
-import ris_processing.read_ris
+from . import read_ris
 
 def _max_range(image):
     '''Scales the image such that the highest value is one and
@@ -53,13 +53,14 @@ def open_file(file_name):
         filesList = os.listdir(path) #Get the list of files in this path
     else:
         filesList = os.listdir() #Just get files here
+    filesList.sort()
         
     #Check files until we find a .png or .ris
     for f in filesList:
         if (f.endswith(".png")):
             return open_png(path, filesList)
         elif (f.endswith(".ris")):
-            return ris_processing.read_ris.read_thermogram(path + f)
+            return read_ris.read_thermogram(path + f)
         
     
 
