@@ -22,7 +22,7 @@ async def processScan(event):
                                                 path_to_save = '/var/www/html/irscans/' +time, # The save path is hard-coded
                                                 simulation_select = event.message['pngPath'],
                                                 process_select = event.message['processingTechnique'],
-                                                frames_to_process = event.message['framesToProcess'],
+                                                frames_to_process = event.message['framesToProcess']-event.message['frameStart'],
                                                 frame_start = event.message['frameStart'])
     print('Scan complete')
 
