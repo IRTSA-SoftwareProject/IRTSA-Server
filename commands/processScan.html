@@ -20,7 +20,13 @@
       
     </div>
     <div class='code'>
-      <div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">server.messages</span> <span class="kn">import</span> <span class="n">message</span>
+      <div class="highlight"><pre><span></span><span class="sd">&#39;&#39;&#39; Created on 23 Sep. 2018, last editied 23 Oct. 2018</span>
+<span class="sd">Command that runs processing on the folder sent by the app</span>
+<span class="sd">#DIVIDER</span>
+<span class="sd">@author: Caspar Pikaar, edited by James Moran [jpmoran.pac@gmail.com]</span>
+<span class="sd">&#39;&#39;&#39;</span>
+
+<span class="kn">from</span> <span class="nn">server.messages</span> <span class="kn">import</span> <span class="n">message</span>
 <span class="kn">from</span> <span class="nn">server.events</span> <span class="kn">import</span> <span class="n">events</span><span class="p">,</span> <span class="n">of_type</span><span class="p">,</span> <span class="n">via_asyncio</span>
 <span class="kn">from</span> <span class="nn">server.commands.ris_processing</span> <span class="kn">import</span> <span class="n">image_process_interface</span>
 <span class="kn">import</span> <span class="nn">numpy</span>
@@ -38,11 +44,27 @@
       <div class='octowrap'>
         <a class='octothorpe' href='#section-1'>#</a>
       </div>
+      
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>    <span class="n">time</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;%Y%m</span><span class="si">%d</span><span class="s2">%H%M%S&quot;</span><span class="p">)</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-2'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-2'>#</a>
+      </div>
       <p>get current time to save scan</p>
     </div>
     <div class='code'>
-      <div class="highlight"><pre>    <span class="n">time</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;%Y%m</span><span class="si">%d</span><span class="s2">%H%M%S&quot;</span><span class="p">)</span>
-    <span class="n">await</span> <span class="n">image_process_interface</span><span class="o">.</span><span class="n">process_image</span><span class="p">(</span><span class="n">connection</span><span class="p">,</span> <span class="s1">&#39;/var/www/html/irscans/&#39;</span> <span class="o">+</span><span class="n">time</span><span class="p">,</span> <span class="s1">&#39;Final Thermal Hotspot&#39;</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+      <div class="highlight"><pre>    <span class="n">await</span> <span class="n">image_process_interface</span><span class="o">.</span><span class="n">process_image</span><span class="p">(</span><span class="n">connection</span><span class="p">,</span>
+                                                <span class="n">path_to_save</span> <span class="o">=</span> <span class="s1">&#39;/var/www/html/irscans/&#39;</span> <span class="o">+</span><span class="n">time</span><span class="p">,</span> <span class="c1"># The save path is hard-coded</span>
+                                                <span class="n">simulation_select</span> <span class="o">=</span> <span class="n">event</span><span class="o">.</span><span class="n">message</span><span class="p">[</span><span class="s1">&#39;pngPath&#39;</span><span class="p">],</span>
+                                                <span class="n">process_select</span> <span class="o">=</span> <span class="n">event</span><span class="o">.</span><span class="n">message</span><span class="p">[</span><span class="s1">&#39;processingTechnique&#39;</span><span class="p">],</span>
+                                                <span class="n">frames_to_process</span> <span class="o">=</span> <span class="n">event</span><span class="o">.</span><span class="n">message</span><span class="p">[</span><span class="s1">&#39;framesToProcess&#39;</span><span class="p">],</span>
+                                                <span class="n">frame_start</span> <span class="o">=</span> <span class="n">event</span><span class="o">.</span><span class="n">message</span><span class="p">[</span><span class="s1">&#39;frameStart&#39;</span><span class="p">])</span>
     <span class="k">print</span><span class="p">(</span><span class="s1">&#39;Scan complete&#39;</span><span class="p">)</span>
 
 
@@ -50,6 +72,20 @@
     <span class="o">.</span><span class="n">subscribe</span><span class="p">(</span><span class="n">via_asyncio</span><span class="p">(</span><span class="n">processScan</span><span class="p">))</span>
 
 </pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-3'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-3'>#</a>
+      </div>
+      <p>The event object contains two parameters: .connection and .message;
+ .connection contains a .send function that accepts a message, while
+ .message is a dictionary containing the parameters sent from the app side.</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre></pre></div>
     </div>
   </div>
   <div class='clearall'></div>

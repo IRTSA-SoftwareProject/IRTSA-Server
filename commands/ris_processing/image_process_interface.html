@@ -17,45 +17,43 @@
       <div class='octowrap'>
         <a class='octothorpe' href='#section-0'>#</a>
       </div>
-      <p>Created on 04/10/2018
-Module to simplify interfacing with the processing scripts
-@author: James Moran</p>
+      
     </div>
     <div class='code'>
-      <div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">file_io_thermal</span>
-<span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">process_image</span> <span class="k">as</span> <span class="n">process_image_file</span>
+      <div class="highlight"><pre><span></span><span class="sd">&#39;&#39;&#39; Created on 04 Oct. 2018, last edited 23 Oct. 2018</span>
+<span class="sd">Module to simplify interfacing with the processing scripts</span>
+<span class="sd">#DIVIDER</span>
+<span class="sd">@author: James Moran [jpmoran.pac@gmail.com]</span>
+<span class="sd">&#39;&#39;&#39;</span>
+
+<span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">file_io_thermal</span>
+<span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">process_image</span> <span class="k">as</span> <span class="n">process_image_file</span> <span class="c1"># Must be aliased, as the function matches the filename</span>
 <span class="kn">from</span> <span class="nn">server.messages</span> <span class="kn">import</span> <span class="n">message</span>
 <span class="kn">import</span> <span class="nn">asyncio</span>
 <span class="kn">import</span> <span class="nn">sys</span>
 <span class="kn">import</span> <span class="nn">numpy</span>
 <span class="kn">import</span> <span class="nn">base64</span>
 
-<span class="n">async</span> <span class="k">def</span> <span class="nf">process_image</span><span class="p">(</span><span class="n">connection</span><span class="p">,</span> <span class="n">path_to_save</span><span class="p">,</span> <span class="n">simulation_select</span><span class="p">,</span> <span class="n">process_select</span><span class="p">,</span> <span class="n">frames_to_process</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="p">):</span>
-    <span class="k">print</span><span class="p">(</span><span class="s1">&#39;Reading file...&#39;</span><span class="p">)</span>
-    <span class="n">thermogram</span> <span class="o">=</span> <span class="n">file_io_thermal</span><span class="o">.</span><span class="n">open_png</span><span class="p">(</span><span class="s1">&#39;/home/pi/scans/png/&#39;</span><span class="p">)</span>
-    <span class="n">await</span> <span class="n">connection</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">message</span><span class="p">(</span><span class="s1">&#39;scan_progress&#39;</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;percent&#39;</span><span class="p">:</span> <span class="mi">10</span><span class="p">}))</span>
+<span class="n">async</span> <span class="k">def</span> <span class="nf">process_image</span><span class="p">(</span><span class="n">connection</span><span class="p">,</span> <span class="n">path_to_save</span><span class="p">,</span> <span class="n">simulation_select</span><span class="p">,</span>
+                        <span class="n">process_select</span><span class="p">,</span> <span class="n">frames_to_process</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">frame_start</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;Encapsulates the processing methods implemented. Returns a 3D numpy array containing</span>
+<span class="sd">    the processed image, with [0, y, x]. Note that the first dimension only ever has a length</span>
+<span class="sd">    of one.</span>
+<span class="sd">    </span>
+<span class="sd">    Connection is the address of the object encapsulating the request event from the app.</span>
+<span class="sd">    Path_to_save is the directory to save the file .png to.</span>
+<span class="sd">    Simulation_select chooses which folder to search for files (in theory each folder</span>
+<span class="sd">    contains a different simulation, but in the actual application this could store the</span>
+<span class="sd">    .ris files output by the camera).</span>
+<span class="sd">    Frames_to_process is the total number of frames that should be processed out of the total.</span>
+<span class="sd">    Frame_start is which frame to start from.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
     
-    <span class="k">print</span><span class="p">(</span><span class="s1">&#39;Processing image...&#39;</span><span class="p">)</span>
-    <span class="n">phasemap</span> <span class="o">=</span> <span class="n">process_image_file</span><span class="o">.</span><span class="n">process_image</span><span class="p">(</span><span class="n">thermogram</span><span class="p">,</span> <span class="n">method_select</span> <span class="o">=</span> <span class="mi">2</span><span class="p">,</span> <span class="n">frame_length</span> <span class="o">=</span> <span class="mi">25</span><span class="p">,</span> <span class="n">xStartSkip</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">xEndSkip</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">yStartSkip</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">yEndSkip</span> <span class="o">=</span> <span class="mi">0</span><span class="p">)</span>
-
-    <span class="n">await</span> <span class="n">connection</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">message</span><span class="p">(</span><span class="s1">&#39;scan_progress&#39;</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;percent&#39;</span><span class="p">:</span> <span class="mi">90</span><span class="p">}))</span>
-
-    <span class="k">print</span><span class="p">(</span><span class="s1">&#39;Saving phasemap to .png...&#39;</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">phasemap</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span> <span class="c1">#Check if there is only one thermogram</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">file_io_thermal</span><span class="o">.</span><span class="n">save_png</span><span class="p">(</span><span class="n">phasemap</span><span class="p">,</span> <span class="n">path_to_save</span> <span class="o">+</span> <span class="s1">&#39;.png&#39;</span><span class="p">):</span>
-            <span class="k">print</span><span class="p">(</span><span class="s1">&#39;Failed to save .png :(&#39;</span><span class="p">)</span>
-            <span class="n">await</span> <span class="n">connection</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">message</span><span class="p">(</span><span class="s1">&#39;error&#39;</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;Unable to save&#39;</span><span class="p">}))</span>
-    <span class="k">else</span><span class="p">:</span> <span class="c1">#Save all thermograms if more than one was produced</span>
-        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">phasemap</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="mi">1</span><span class="p">):</span>
-            <span class="k">if</span> <span class="ow">not</span> <span class="n">file_io_thermal</span><span class="o">.</span><span class="n">save_png</span><span class="p">(</span><span class="n">phasemap</span><span class="p">[</span><span class="n">i</span><span class="p">,:,:],</span> <span class="n">path_to_save</span> <span class="o">+</span> <span class="s1">&#39;{0:04d}&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;.png&#39;</span><span class="p">):</span>
-                <span class="k">print</span><span class="p">(</span><span class="s1">&#39;Failed to save .png :(&#39;</span><span class="p">)</span>
-                <span class="n">await</span> <span class="n">connection</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">message</span><span class="p">(</span><span class="s1">&#39;error&#39;</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;Unable to save&#39;</span><span class="p">}))</span>
-                
-    <span class="n">scanImg</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">path_to_save</span> <span class="o">+</span> <span class="s1">&#39;0002.png&#39;</span><span class="p">,</span> <span class="s1">&#39;rb&#39;</span><span class="p">)</span>
-    <span class="n">scan</span> <span class="o">=</span> <span class="n">base64</span><span class="o">.</span><span class="n">b64encode</span><span class="p">(</span><span class="n">scanImg</span><span class="o">.</span><span class="n">read</span><span class="p">())</span>
-    <span class="n">scanImg</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
-    <span class="n">await</span> <span class="n">connection</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">message</span><span class="p">(</span><span class="s1">&#39;scan_progress&#39;</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;percent&#39;</span><span class="p">:</span> <span class="mi">100</span><span class="p">}))</span>
-    <span class="n">await</span> <span class="n">connection</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">message</span><span class="p">(</span><span class="s1">&#39;scan_complete&#39;</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;base64EncodedString&#39;</span><span class="p">:</span> <span class="n">scan</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s1">&#39;utf-8&#39;</span><span class="p">)}))</span></pre></div>
+    <span class="k">print</span><span class="p">(</span><span class="s1">&#39;Reading file...&#39;</span><span class="p">)</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">thermogram</span> <span class="o">=</span> <span class="n">file_io_thermal</span><span class="o">.</span><span class="n">open_file</span><span class="p">(</span><span class="s1">&#39;/home/pi/scans/png/&#39;</span> <span class="o">+</span> <span class="n">simulation_select</span> <span class="o">+</span> <span class="s1">&#39;/&#39;</span><span class="p">)</span>
+    <span class="k">except</span><span class="p">:</span>
+        <span class="k">print</span><span class="p">(</span><span class="s1">&#39;Unable to load file!&#39;</span><span class="p">)</span></pre></div>
     </div>
   </div>
   <div class='clearall'></div>
@@ -64,31 +62,116 @@ Module to simplify interfacing with the processing scripts
       <div class='octowrap'>
         <a class='octothorpe' href='#section-1'>#</a>
       </div>
-      <p>TODO: find a way to send all .pngs if more than one was made, maybe gif, or can just do m ultiple files?</p>
+      
     </div>
     <div class='code'>
-      <div class="highlight"><pre>    <span class="k">print</span><span class="p">(</span><span class="s2">&quot;Done! Process Complete.&quot;</span><span class="p">)</span>
-
-
-<span class="n">async</span> <span class="k">def</span> <span class="nf">export_gif</span><span class="p">(</span><span class="n">connection</span><span class="p">,</span> <span class="n">path_to_save</span><span class="p">,</span> <span class="n">simulation_select</span><span class="p">):</span>
-    <span class="k">print</span><span class="p">(</span><span class="s1">&#39;Reading file...&#39;</span><span class="p">)</span>
-    <span class="n">thermogram</span> <span class="o">=</span> <span class="n">file_io_thermal</span><span class="o">.</span><span class="n">open_png</span><span class="p">(</span><span class="s1">&#39;/home/pi/scans/png/&#39;</span><span class="p">)</span>
-    <span class="n">await</span> <span class="n">connection</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">message</span><span class="p">(</span><span class="s1">&#39;export_progress&#39;</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;percent&#39;</span><span class="p">:</span> <span class="mi">50</span><span class="p">}))</span>
-
-    <span class="k">if</span> <span class="ow">not</span> <span class="n">file_io_thermal</span><span class="o">.</span><span class="n">save_gif</span><span class="p">(</span><span class="n">thermogram</span><span class="p">,</span> <span class="n">path_to_save</span> <span class="o">+</span> <span class="s1">&#39;.gif&#39;</span><span class="p">):</span>
-        <span class="k">print</span><span class="p">(</span><span class="s1">&#39;Failed to save .gif :(&#39;</span><span class="p">)</span>
-        <span class="n">await</span> <span class="n">connection</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">message</span><span class="p">(</span><span class="s1">&#39;error&#39;</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;Unable to save&#39;</span><span class="p">}))</span>
+      <div class="highlight"><pre>        <span class="n">scanImg</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="s1">&#39;/home/pi/error/error.png&#39;</span><span class="p">,</span> <span class="s1">&#39;rb&#39;</span><span class="p">)</span>
+        <span class="n">scan</span> <span class="o">=</span> <span class="n">base64</span><span class="o">.</span><span class="n">b64encode</span><span class="p">(</span><span class="n">scanImg</span><span class="o">.</span><span class="n">read</span><span class="p">())</span>
+        <span class="n">scanImg</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+        <span class="n">await</span> <span class="n">connection</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">message</span><span class="p">(</span><span class="s1">&#39;scan_progress&#39;</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;percent&#39;</span><span class="p">:</span> <span class="mi">100</span><span class="p">}))</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-2'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-2'>#</a>
+      </div>
+      <p>The app hasn&rsquo;t implemented an error code that can be read from the server, so 
+ we hack an error message by sending back a .png with the error written on it.
+Load the error image</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>        <span class="n">await</span> <span class="n">connection</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">message</span><span class="p">(</span><span class="s1">&#39;scan_complete&#39;</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;base64EncodedString&#39;</span><span class="p">:</span> <span class="n">scan</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s1">&#39;utf-8&#39;</span><span class="p">)}))</span>
+        <span class="k">return</span>
+        
+    <span class="n">await</span> <span class="n">connection</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">message</span><span class="p">(</span><span class="s1">&#39;scan_progress&#39;</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;percent&#39;</span><span class="p">:</span> <span class="mi">10</span><span class="p">}))</span>
     
-    <span class="n">scanImg</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">path_to_save</span> <span class="o">+</span> <span class="s1">&#39;.gif&#39;</span><span class="p">,</span> <span class="s1">&#39;rb&#39;</span><span class="p">)</span>
+    <span class="k">print</span><span class="p">(</span><span class="s1">&#39;Selecting process...&#39;</span><span class="p">)</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-3'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-3'>#</a>
+      </div>
+      <p>Send the error image</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>    <span class="n">method</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">if</span> <span class="n">process_select</span> <span class="o">==</span> <span class="s2">&quot;PPT Static&quot;</span><span class="p">:</span> <span class="c1"># The app directly sends the names from the combo box</span>
+        <span class="n">method</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">if</span> <span class="n">process_select</span> <span class="o">==</span> <span class="s2">&quot;PPT Dynamic&quot;</span><span class="p">:</span>
+        <span class="n">method</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="k">if</span> <span class="n">process_select</span> <span class="o">==</span> <span class="s2">&quot;Image Subtraction Static&quot;</span><span class="p">:</span>
+        <span class="n">method</span> <span class="o">=</span> <span class="mi">2</span>
+    <span class="k">if</span> <span class="n">process_select</span> <span class="o">==</span> <span class="s2">&quot;Image Subtraction Dynamic&quot;</span><span class="p">:</span>
+        <span class="n">method</span> <span class="o">=</span> <span class="mi">3</span>
+    <span class="k">if</span> <span class="n">process_select</span> <span class="o">==</span> <span class="s2">&quot;TSR Static&quot;</span><span class="p">:</span>
+        <span class="n">method</span> <span class="o">=</span> <span class="mi">4</span>
+    <span class="k">if</span> <span class="n">process_select</span> <span class="o">==</span> <span class="s2">&quot;TSR Dynamic&quot;</span><span class="p">:</span>
+        <span class="n">method</span> <span class="o">=</span> <span class="mi">5</span>
+
+    <span class="k">print</span><span class="p">(</span><span class="s1">&#39;Processing image...&#39;</span><span class="p">)</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">phasemap</span> <span class="o">=</span> <span class="n">process_image_file</span><span class="o">.</span><span class="n">process_image</span><span class="p">(</span><span class="n">thermogram</span><span class="p">,</span> <span class="n">method_select</span> <span class="o">=</span> <span class="n">method</span><span class="p">,</span>
+                                                    <span class="n">frame_start</span> <span class="o">=</span> <span class="n">frame_start</span><span class="p">,</span>
+                                                    <span class="n">frames_to_process</span> <span class="o">=</span> <span class="n">frames_to_process</span><span class="p">,</span>
+                                                    <span class="n">xStartSkip</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">xEndSkip</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
+                                                    <span class="n">yStartSkip</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">yEndSkip</span> <span class="o">=</span> <span class="mi">0</span><span class="p">)</span>
+    <span class="k">except</span><span class="p">:</span>
+        <span class="k">print</span><span class="p">(</span><span class="s1">&#39;Unable to process file!&#39;</span><span class="p">)</span>
+        <span class="n">scanImg</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="s1">&#39;/home/pi/error/error.png&#39;</span><span class="p">,</span> <span class="s1">&#39;rb&#39;</span><span class="p">)</span>
+        <span class="n">scan</span> <span class="o">=</span> <span class="n">base64</span><span class="o">.</span><span class="n">b64encode</span><span class="p">(</span><span class="n">scanImg</span><span class="o">.</span><span class="n">read</span><span class="p">())</span>
+        <span class="n">scanImg</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+        <span class="n">await</span> <span class="n">connection</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">message</span><span class="p">(</span><span class="s1">&#39;scan_progress&#39;</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;percent&#39;</span><span class="p">:</span> <span class="mi">100</span><span class="p">}))</span>
+        <span class="n">await</span> <span class="n">connection</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">message</span><span class="p">(</span><span class="s1">&#39;scan_complete&#39;</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;base64EncodedString&#39;</span><span class="p">:</span> <span class="n">scan</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s1">&#39;utf-8&#39;</span><span class="p">)}))</span>
+        <span class="k">return</span>
+
+    <span class="n">await</span> <span class="n">connection</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">message</span><span class="p">(</span><span class="s1">&#39;scan_progress&#39;</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;percent&#39;</span><span class="p">:</span> <span class="mi">90</span><span class="p">}))</span>
+
+    <span class="k">print</span><span class="p">(</span><span class="s1">&#39;Saving phasemap to .png...&#39;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">phasemap</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span> <span class="c1">#Check if there is only one thermogram</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">file_io_thermal</span><span class="o">.</span><span class="n">save_png</span><span class="p">(</span><span class="n">phasemap</span><span class="p">,</span> <span class="n">path_to_save</span> <span class="o">+</span> <span class="s1">&#39;.png&#39;</span><span class="p">):</span>
+            <span class="k">print</span><span class="p">(</span><span class="s1">&#39;Failed to save .png :(&#39;</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span> <span class="c1">#Save first thermogram if more than one was produced</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">file_io_thermal</span><span class="o">.</span><span class="n">save_png</span><span class="p">(</span><span class="n">phasemap</span><span class="p">[</span><span class="mi">0</span><span class="p">,:,:],</span> <span class="n">path_to_save</span> <span class="o">+</span> <span class="s1">&#39;.png&#39;</span><span class="p">):</span>
+            <span class="k">print</span><span class="p">(</span><span class="s1">&#39;Failed to save.png :(&#39;</span><span class="p">)</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-4'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-4'>#</a>
+      </div>
+      <p>Select the processing method based on the case statement
+ Python doesn&rsquo;t have real switch..case :(</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>    <span class="n">scanImg</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">path_to_save</span> <span class="o">+</span> <span class="s1">&#39;.png&#39;</span><span class="p">,</span> <span class="s1">&#39;rb&#39;</span><span class="p">)</span>
     <span class="n">scan</span> <span class="o">=</span> <span class="n">base64</span><span class="o">.</span><span class="n">b64encode</span><span class="p">(</span><span class="n">scanImg</span><span class="o">.</span><span class="n">read</span><span class="p">())</span>
     <span class="n">scanImg</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
-    <span class="n">await</span> <span class="n">connection</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">message</span><span class="p">(</span><span class="s1">&#39;export_progress&#39;</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;percent&#39;</span><span class="p">:</span> <span class="mi">100</span><span class="p">}))</span>
-    <span class="n">await</span> <span class="n">connection</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">message</span><span class="p">(</span><span class="s1">&#39;exprot_complete&#39;</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;base64EncodedString&#39;</span><span class="p">:</span> <span class="n">scan</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s1">&#39;utf-8&#39;</span><span class="p">)}))</span>
-     
+    <span class="n">await</span> <span class="n">connection</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">message</span><span class="p">(</span><span class="s1">&#39;scan_progress&#39;</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;percent&#39;</span><span class="p">:</span> <span class="mi">100</span><span class="p">}))</span>
+    <span class="n">await</span> <span class="n">connection</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">message</span><span class="p">(</span><span class="s1">&#39;scan_complete&#39;</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;base64EncodedString&#39;</span><span class="p">:</span>
+                                                    <span class="n">scan</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s1">&#39;utf-8&#39;</span><span class="p">)}))</span>
 
     <span class="k">print</span><span class="p">(</span><span class="s2">&quot;Done! Process Complete.&quot;</span><span class="p">)</span>
 
 </pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-5'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-5'>#</a>
+      </div>
+      <p>Open the .png that was saved and code it in base 64 to send back</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre></pre></div>
     </div>
   </div>
   <div class='clearall'></div>

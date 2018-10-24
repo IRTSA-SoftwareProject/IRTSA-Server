@@ -17,9 +17,9 @@
       <div class='octowrap'>
         <a class='octothorpe' href='#section-0'>#</a>
       </div>
-      <p>Created on 11 Apr. 2018
-Processes thermgrams and returns the phase map.
-@author: James Moran</p>
+      <p>Created on 11 Apr. 2018, last edited 23 Oct. 2018
+Processes thermograms and returns the phase map.
+@author: James Moran [jpmoran.pac@gmail.com]</p>
     </div>
     <div class='code'>
       <div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">scipy</span>
@@ -40,8 +40,8 @@ Processes thermgrams and returns the phase map.
       <p>Expects a thermogram as a u_int16 3D numpy multdimensional array where</p>
     </div>
     <div class='code'>
-      <div class="highlight"><pre><span class="k">def</span> <span class="nf">process_image</span><span class="p">(</span><span class="n">thermogram</span><span class="p">,</span> <span class="n">method_select</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">frame_length</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">return_phase</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
-                  <span class="n">xStartSkip</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">xEndSkip</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">yStartSkip</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">yEndSkip</span> <span class="o">=</span> <span class="mi">0</span><span class="p">):</span></pre></div>
+      <div class="highlight"><pre><span class="k">def</span> <span class="nf">process_image</span><span class="p">(</span><span class="n">thermogram</span><span class="p">,</span> <span class="n">method_select</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">frames_to_process</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">frame_start</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
+                  <span class="n">return_phase</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="n">xStartSkip</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">xEndSkip</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">yStartSkip</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">yEndSkip</span> <span class="o">=</span> <span class="mi">0</span><span class="p">):</span></pre></div>
     </div>
   </div>
   <div class='clearall'></div>
@@ -52,9 +52,10 @@ Processes thermgrams and returns the phase map.
       </div>
       <pre><code>each dimension is: [frame, row, column].
 Method_Select is to choose what form of processing to use what what stabilisation
-to implement.
-Frame_length sets the numbers of frames to use in FFT analysis, uses all frames
+to implement. 
+Frames_to_process sets the numbers of frames to use in FFT analysis, uses all frames
 by default.
+Frame_start is the first frame to process.
 Return_phase controls what phase will be returned, 0 is always a blank map;
 should almost always be 1.
 xStart, yStart, xEndSkip, and yEndSkip control how many pixels are skipped in
@@ -64,8 +65,9 @@ Returns an array of 2D phase maps in the format: [frame_index, row, column]
 </code></pre>
     </div>
     <div class='code'>
-      <div class="highlight"><pre>    <span class="n">yLength</span> <span class="o">=</span> <span class="n">thermogram</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">];</span> <span class="c1">#Note that y is before x; a carry over from</span>
-    <span class="n">xLength</span> <span class="o">=</span> <span class="n">thermogram</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">2</span><span class="p">];</span> <span class="c1"># Matlab...</span></pre></div>
+      <div class="highlight"><pre>        
+    <span class="n">yLength</span> <span class="o">=</span> <span class="n">thermogram</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">];</span> <span class="c1"># Note that y is before x; a carry over from </span>
+    <span class="n">xLength</span> <span class="o">=</span> <span class="n">thermogram</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">2</span><span class="p">];</span> <span class="c1">#  Matlab...</span></pre></div>
     </div>
   </div>
   <div class='clearall'></div>
@@ -74,27 +76,14 @@ Returns an array of 2D phase maps in the format: [frame_index, row, column]
       <div class='octowrap'>
         <a class='octothorpe' href='#section-3'>#</a>
       </div>
-      <p>Shrink the thermogram to the required size</p>
+      <p>Shrink the thermogram to the required size
+The entire thermogram is passed even if only a section is to be analysed to
+ ensure the stabilization has the maximum range to secure stability</p>
     </div>
     <div class='code'>
       <div class="highlight"><pre>    <span class="n">thermogram</span> <span class="o">=</span> <span class="n">thermogram</span><span class="p">[:,</span> <span class="n">yStartSkip</span><span class="p">:</span><span class="n">yLength</span><span class="o">-</span><span class="n">yEndSkip</span><span class="p">,</span> <span class="n">xStartSkip</span><span class="p">:</span><span class="n">xLength</span><span class="o">-</span><span class="n">xEndSkip</span><span class="p">]</span>
 
-    <span class="k">if</span> <span class="p">(</span><span class="n">method_select</span> <span class="o">==</span> <span class="mi">0</span><span class="p">):</span>
-        <span class="n">thermogram</span> <span class="o">=</span> <span class="n">ris_processing</span><span class="o">.</span><span class="n">stabilise_image</span><span class="o">.</span><span class="n">stabilise_image</span><span class="p">(</span><span class="n">thermogram</span><span class="p">,</span> <span class="n">frame_length</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">pulse_phase_thermography</span><span class="p">(</span><span class="n">thermogram</span><span class="p">,</span> <span class="n">frame_length</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
-    <span class="k">if</span> <span class="p">(</span><span class="n">method_select</span> <span class="o">==</span> <span class="mi">1</span><span class="p">):</span>
-        <span class="k">return</span> <span class="n">pulse_phase_thermography</span><span class="p">(</span><span class="n">thermogram</span><span class="p">,</span> <span class="n">frame_length</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
-    <span class="k">if</span> <span class="p">(</span><span class="n">method_select</span> <span class="o">==</span> <span class="mi">2</span><span class="p">):</span>
-        <span class="n">thermogram</span> <span class="o">=</span> <span class="n">stabilise_image</span><span class="o">.</span><span class="n">stabilise_image</span><span class="p">(</span><span class="n">thermogram</span><span class="p">,</span> <span class="n">frame_length</span><span class="p">)</span>
-
-        <span class="k">return</span> <span class="n">image_subtraction</span><span class="p">(</span><span class="n">thermogram</span><span class="p">,</span> <span class="n">frame_length</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
-    <span class="k">if</span> <span class="p">(</span><span class="n">method_select</span> <span class="o">==</span> <span class="mi">3</span><span class="p">):</span>
-        <span class="k">return</span> <span class="n">image_subtraction</span><span class="p">(</span><span class="n">thermogram</span><span class="p">,</span> <span class="n">frame_length</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
-    <span class="k">if</span> <span class="p">(</span><span class="n">method_select</span> <span class="o">==</span> <span class="mi">4</span><span class="p">):</span>
-        <span class="n">thermogram</span> <span class="o">=</span> <span class="n">ris_processing</span><span class="o">.</span><span class="n">stabilise_image</span><span class="o">.</span><span class="n">stabilise_image</span><span class="p">(</span><span class="n">thermogram</span><span class="p">,</span> <span class="n">frame_length</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">thermographic_signal_reconstruction</span><span class="p">(</span><span class="n">thermogram</span><span class="p">,</span> <span class="n">frame_length</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
-    <span class="k">if</span> <span class="p">(</span><span class="n">method_select</span> <span class="o">==</span> <span class="mi">5</span><span class="p">):</span>
-        <span class="k">return</span> <span class="n">thermographic_signal_reconstruction</span><span class="p">(</span><span class="n">thermogram</span><span class="p">,</span> <span class="n">frame_length</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span></pre></div>
+    <span class="n">total_frames</span> <span class="o">=</span> <span class="n">thermogram</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span></pre></div>
     </div>
   </div>
   <div class='clearall'></div>
@@ -103,10 +92,14 @@ Returns an array of 2D phase maps in the format: [frame_index, row, column]
       <div class='octowrap'>
         <a class='octothorpe' href='#section-4'>#</a>
       </div>
-      <p>Expects a thermogram as a u_int16 3D numpy multdimensional array where</p>
+      <p>If the number of analysis frames hasn&rsquo;t been specified, use the total number
+The default sent by the app is -1, so if this is sent assume we want to max
+ number of frames.
+If the number of frames is longer than the total, reset to zero.</p>
     </div>
     <div class='code'>
-      <div class="highlight"><pre><span class="k">def</span> <span class="nf">pulse_phase_thermography</span><span class="p">(</span><span class="n">thermogram</span><span class="p">,</span> <span class="n">frame_length</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">return_phase</span> <span class="o">=</span> <span class="mi">1</span><span class="p">):</span></pre></div>
+      <div class="highlight"><pre>    <span class="k">if</span> <span class="p">(</span><span class="n">frame_start</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="o">|</span> <span class="p">(</span><span class="n">frame_start</span> <span class="o">&gt;</span> <span class="n">total_frames</span><span class="p">):</span>
+        <span class="n">frame_start</span> <span class="o">=</span> <span class="mi">0</span></pre></div>
     </div>
   </div>
   <div class='clearall'></div>
@@ -115,16 +108,11 @@ Returns an array of 2D phase maps in the format: [frame_index, row, column]
       <div class='octowrap'>
         <a class='octothorpe' href='#section-5'>#</a>
       </div>
-      <pre><code>each dimension is: [frame, row, column].
-Frame_length sets the numbers of frames to use in FFT analysis, uses all frames
-by default.
-Return_phase controls what phase will be returned, 0 is always a blank map;
-should almost always be 1.
-Returns an array of 2D phase maps in the format: [frame_index, row, column]
-</code></pre>
+      <p>Also check the number of frames processed doesn&rsquo;t run longer than the file.</p>
     </div>
     <div class='code'>
-      <div class="highlight"><pre>    <span class="n">total_frames</span> <span class="o">=</span> <span class="n">thermogram</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span></pre></div>
+      <div class="highlight"><pre>    <span class="k">if</span> <span class="p">(</span><span class="n">frames_to_process</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="o">|</span> <span class="p">(</span><span class="n">frame_start</span> <span class="o">+</span> <span class="n">total_frames</span> <span class="o">&gt;</span> <span class="n">total_frames</span><span class="p">):</span>
+        <span class="n">frames_to_process</span> <span class="o">=</span> <span class="n">total_frames</span> <span class="o">-</span> <span class="n">frame_start</span></pre></div>
     </div>
   </div>
   <div class='clearall'></div>
@@ -133,16 +121,12 @@ Returns an array of 2D phase maps in the format: [frame_index, row, column]
       <div class='octowrap'>
         <a class='octothorpe' href='#section-6'>#</a>
       </div>
-      <p>If the number of analysis frames hasn&rsquo;t been specified, use the total number</p>
+      <p>(Pseudo-)Static PPT</p>
     </div>
     <div class='code'>
-      <div class="highlight"><pre>    <span class="k">if</span> <span class="p">(</span><span class="n">frame_length</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="o">|</span> <span class="p">(</span><span class="n">total_frames</span> <span class="o">&gt;</span> <span class="n">total_frames</span><span class="p">):</span>
-        <span class="n">frame_length</span> <span class="o">=</span> <span class="n">total_frames</span>
-
-    <span class="n">yLength</span> <span class="o">=</span> <span class="n">thermogram</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">];</span> <span class="c1">#Note that y is before x; a carry over from</span>
-    <span class="n">xLength</span> <span class="o">=</span> <span class="n">thermogram</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">2</span><span class="p">];</span> <span class="c1"># Matlab...</span>
-
-    <span class="n">frame_index</span> <span class="o">=</span> <span class="mi">0</span> <span class="c1">#Slice index</span></pre></div>
+      <div class="highlight"><pre>    <span class="k">if</span> <span class="p">(</span><span class="n">method_select</span> <span class="o">==</span> <span class="mi">0</span><span class="p">):</span>
+        <span class="n">thermogram</span> <span class="o">=</span> <span class="n">stabilise_image</span><span class="o">.</span><span class="n">stabilise_image</span><span class="p">(</span><span class="n">thermogram</span><span class="p">,</span> <span class="n">frames_to_process</span> <span class="o">=</span> <span class="n">frames_to_process</span><span class="p">,</span> <span class="n">start_frame</span> <span class="o">=</span> <span class="n">frame_start</span><span class="p">,</span> <span class="n">global_motion</span> <span class="o">=</span> <span class="bp">False</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">pulse_phase_thermography</span><span class="p">(</span><span class="n">thermogram</span><span class="p">,</span> <span class="n">frames_to_process</span> <span class="o">=</span> <span class="n">frames_to_process</span><span class="p">)</span></pre></div>
     </div>
   </div>
   <div class='clearall'></div>
@@ -151,11 +135,12 @@ Returns an array of 2D phase maps in the format: [frame_index, row, column]
       <div class='octowrap'>
         <a class='octothorpe' href='#section-7'>#</a>
       </div>
-      <p>Preallocate phase maps</p>
+      <p>Dynamic PPT</p>
     </div>
     <div class='code'>
-      <div class="highlight"><pre>    <span class="n">phasemap_count</span> <span class="o">=</span> <span class="n">ceil</span><span class="p">(</span><span class="n">total_frames</span><span class="o">/</span><span class="n">frame_length</span><span class="p">)</span>
-    <span class="n">phasemap</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">zeros</span><span class="p">([</span><span class="n">phasemap_count</span><span class="p">,</span> <span class="n">yLength</span><span class="p">,</span> <span class="n">xLength</span><span class="p">],</span> <span class="n">dtype</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">complex64</span><span class="p">)</span></pre></div>
+      <div class="highlight"><pre>    <span class="k">if</span> <span class="p">(</span><span class="n">method_select</span> <span class="o">==</span> <span class="mi">1</span><span class="p">):</span>
+        <span class="n">thermogram</span> <span class="o">=</span> <span class="n">stabilise_image</span><span class="o">.</span><span class="n">stabilise_image</span><span class="p">(</span><span class="n">thermogram</span><span class="p">,</span> <span class="n">frames_to_process</span> <span class="o">=</span> <span class="n">frames_to_process</span><span class="p">,</span> <span class="n">start_frame</span> <span class="o">=</span> <span class="n">frame_start</span><span class="p">,</span> <span class="n">global_motion</span> <span class="o">=</span> <span class="bp">True</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">pulse_phase_thermography</span><span class="p">(</span><span class="n">thermogram</span><span class="p">,</span> <span class="n">frames_to_process</span> <span class="o">=</span> <span class="n">frames_to_process</span><span class="p">)</span></pre></div>
     </div>
   </div>
   <div class='clearall'></div>
@@ -164,11 +149,12 @@ Returns an array of 2D phase maps in the format: [frame_index, row, column]
       <div class='octowrap'>
         <a class='octothorpe' href='#section-8'>#</a>
       </div>
-      <p>If the number of frames have been specified, loop over the fft until the entire
-thermogram has been analysed.</p>
+      <p>(Pseudo-)Static Image Subtraction</p>
     </div>
     <div class='code'>
-      <div class="highlight"><pre>    <span class="k">for</span> <span class="n">frame_index</span> <span class="ow">in</span> <span class="nb">range</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">phasemap_count</span><span class="p">):</span></pre></div>
+      <div class="highlight"><pre>    <span class="k">if</span> <span class="p">(</span><span class="n">method_select</span> <span class="o">==</span> <span class="mi">2</span><span class="p">):</span>
+        <span class="n">thermogram</span> <span class="o">=</span> <span class="n">stabilise_image</span><span class="o">.</span><span class="n">stabilise_image</span><span class="p">(</span><span class="n">thermogram</span><span class="p">,</span> <span class="n">frames_to_process</span> <span class="o">=</span> <span class="n">frames_to_process</span><span class="p">,</span> <span class="n">start_frame</span> <span class="o">=</span> <span class="n">frame_start</span><span class="p">,</span> <span class="n">global_motion</span> <span class="o">=</span> <span class="bp">False</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">image_subtraction</span><span class="p">(</span><span class="n">thermogram</span><span class="p">,</span> <span class="n">frames_to_process</span> <span class="o">=</span> <span class="n">frames_to_process</span><span class="p">)</span></pre></div>
     </div>
   </div>
   <div class='clearall'></div>
@@ -177,16 +163,12 @@ thermogram has been analysed.</p>
       <div class='octowrap'>
         <a class='octothorpe' href='#section-9'>#</a>
       </div>
-      <p>Perform the fft over the frame_index&rsquo;th slice of the thermogram</p>
+      <p>Dynamic Image Subtraction</p>
     </div>
     <div class='code'>
-      <div class="highlight"><pre>        <span class="n">fftmap</span> <span class="o">=</span> <span class="n">scipy</span><span class="o">.</span><span class="n">fft</span><span class="p">(</span><span class="n">thermogram</span><span class="p">[</span><span class="n">frame_index</span> <span class="o">*</span> <span class="n">frame_length</span> <span class="p">:</span>
-                                      <span class="p">(</span><span class="n">frame_index</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">frame_length</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:],</span>
-                                      <span class="n">n</span> <span class="o">=</span> <span class="n">frame_length</span><span class="p">,</span> <span class="n">axis</span> <span class="o">=</span> <span class="mi">0</span><span class="p">)</span>
-        <span class="n">phasemap</span><span class="p">[</span><span class="n">frame_index</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">scipy</span><span class="o">.</span><span class="n">angle</span><span class="p">(</span><span class="n">fftmap</span><span class="p">[</span><span class="n">return_phase</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:])</span>
-        <span class="n">frame_index</span> <span class="o">+=</span> <span class="mi">1</span>
-
-    <span class="k">return</span> <span class="n">phasemap</span></pre></div>
+      <div class="highlight"><pre>    <span class="k">if</span> <span class="p">(</span><span class="n">method_select</span> <span class="o">==</span> <span class="mi">3</span><span class="p">):</span>
+        <span class="n">thermogram</span> <span class="o">=</span> <span class="n">stabilise_image</span><span class="o">.</span><span class="n">stabilise_image</span><span class="p">(</span><span class="n">thermogram</span><span class="p">,</span> <span class="n">frames_to_process</span> <span class="o">=</span> <span class="n">frames_to_process</span><span class="p">,</span> <span class="n">start_frame</span> <span class="o">=</span> <span class="n">frame_start</span><span class="p">,</span> <span class="n">global_motion</span> <span class="o">=</span> <span class="bp">True</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">image_subtraction</span><span class="p">(</span><span class="n">thermogram</span><span class="p">,</span> <span class="n">frames_to_process</span> <span class="o">=</span> <span class="n">frames_to_process</span><span class="p">)</span></pre></div>
     </div>
   </div>
   <div class='clearall'></div>
@@ -195,11 +177,13 @@ thermogram has been analysed.</p>
       <div class='octowrap'>
         <a class='octothorpe' href='#section-10'>#</a>
       </div>
-      
+      <p>(Pseudo-)Static TSR
+ Note that this TSR is very basic and unoptimised</p>
     </div>
     <div class='code'>
-      <div class="highlight"><pre><span class="k">def</span> <span class="nf">image_subtraction</span><span class="p">(</span><span class="n">thermogram</span><span class="p">,</span> <span class="n">frame_length</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">return_phase</span> <span class="o">=</span> <span class="mi">0</span><span class="p">):</span>
-    <span class="n">total_frames</span> <span class="o">=</span> <span class="n">thermogram</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span></pre></div>
+      <div class="highlight"><pre>    <span class="k">if</span> <span class="p">(</span><span class="n">method_select</span> <span class="o">==</span> <span class="mi">4</span><span class="p">):</span>
+        <span class="n">thermogram</span> <span class="o">=</span> <span class="n">stabilise_image</span><span class="o">.</span><span class="n">stabilise_image</span><span class="p">(</span><span class="n">thermogram</span><span class="p">,</span> <span class="n">frames_to_process</span> <span class="o">=</span> <span class="n">frames_to_process</span><span class="p">,</span> <span class="n">start_frame</span> <span class="o">=</span> <span class="n">frame_start</span><span class="p">,</span> <span class="n">global_motion</span> <span class="o">=</span> <span class="bp">False</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">thermographic_signal_reconstruction</span><span class="p">(</span><span class="n">thermogram</span><span class="p">,</span> <span class="n">frames_to_process</span> <span class="o">=</span> <span class="n">frames_to_process</span><span class="p">)</span></pre></div>
     </div>
   </div>
   <div class='clearall'></div>
@@ -208,16 +192,13 @@ thermogram has been analysed.</p>
       <div class='octowrap'>
         <a class='octothorpe' href='#section-11'>#</a>
       </div>
-      <p>If the number of analysis frames hasn&rsquo;t been specified, use the total number</p>
+      <p>Dynamic TSR</p>
     </div>
     <div class='code'>
-      <div class="highlight"><pre>    <span class="k">if</span> <span class="p">(</span><span class="n">frame_length</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="o">|</span> <span class="p">(</span><span class="n">total_frames</span> <span class="o">&gt;</span> <span class="n">total_frames</span><span class="p">):</span>
-        <span class="n">frame_length</span> <span class="o">=</span> <span class="n">total_frames</span>
-
-    <span class="n">yLength</span> <span class="o">=</span> <span class="n">thermogram</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">];</span> <span class="c1">#Note that y is before x; a carry over from</span>
-    <span class="n">xLength</span> <span class="o">=</span> <span class="n">thermogram</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">2</span><span class="p">];</span> <span class="c1"># Matlab...</span>
-
-    <span class="n">frame_index</span> <span class="o">=</span> <span class="mi">0</span> <span class="c1">#Slice index</span></pre></div>
+      <div class="highlight"><pre>    <span class="k">if</span> <span class="p">(</span><span class="n">method_select</span> <span class="o">==</span> <span class="mi">5</span><span class="p">):</span>
+        <span class="n">thermogram</span> <span class="o">=</span> <span class="n">stabilise_image</span><span class="o">.</span><span class="n">stabilise_image</span><span class="p">(</span><span class="n">thermogram</span><span class="p">,</span> <span class="n">frames_to_process</span> <span class="o">=</span> <span class="n">frames_to_process</span><span class="p">,</span> <span class="n">start_frame</span> <span class="o">=</span> <span class="n">frame_start</span><span class="p">,</span> <span class="n">global_motion</span> <span class="o">=</span> <span class="bp">True</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">thermographic_signal_reconstruction</span><span class="p">(</span><span class="n">thermogram</span><span class="p">,</span> <span class="n">frames_to_process</span> <span class="o">=</span> <span class="n">frames_to_process</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">thermogram</span><span class="p">[</span><span class="n">frame_start</span><span class="p">:</span><span class="n">frames_to_process</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:];</span></pre></div>
     </div>
   </div>
   <div class='clearall'></div>
@@ -226,11 +207,11 @@ thermogram has been analysed.</p>
       <div class='octowrap'>
         <a class='octothorpe' href='#section-12'>#</a>
       </div>
-      <p>Preallocate phase maps</p>
+      <p>Expects a thermogram as a u_int16 3D numpy multdimensional array where</p>
     </div>
     <div class='code'>
-      <div class="highlight"><pre>    <span class="n">contrast_count</span> <span class="o">=</span> <span class="n">ceil</span><span class="p">(</span><span class="n">total_frames</span><span class="o">/</span><span class="n">frame_length</span><span class="p">)</span>
-    <span class="n">contrast_map</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">zeros</span><span class="p">([</span><span class="n">contrast_count</span><span class="p">,</span> <span class="n">yLength</span><span class="p">,</span> <span class="n">xLength</span><span class="p">],</span> <span class="n">dtype</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">uint16</span><span class="p">)</span></pre></div>
+      <div class="highlight"><pre><span class="k">def</span> <span class="nf">pulse_phase_thermography</span><span class="p">(</span><span class="n">thermogram</span><span class="p">,</span> <span class="n">frames_to_process</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">frame_start</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> 
+                             <span class="n">return_phase</span> <span class="o">=</span> <span class="mi">1</span><span class="p">):</span></pre></div>
     </div>
   </div>
   <div class='clearall'></div>
@@ -239,11 +220,17 @@ thermogram has been analysed.</p>
       <div class='octowrap'>
         <a class='octothorpe' href='#section-13'>#</a>
       </div>
-      <p>If the number of frames have been specified, loop over the fft until the entire
-thermogram has been analysed.</p>
+      <pre><code>each dimension is: [frame, row, column]. 
+frames_to_process sets the numbers of frames to use in FFT analysis, uses all frames
+by default.
+Return_phase controls what phase will be returned, 0 is always a blank map;
+should almost always be 1.
+Returns an array of 2D phase maps in the format: [frame_index, row, column]
+</code></pre>
     </div>
     <div class='code'>
-      <div class="highlight"><pre>    <span class="k">for</span> <span class="n">frame_index</span> <span class="ow">in</span> <span class="nb">range</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">contrast_count</span><span class="p">):</span></pre></div>
+      <div class="highlight"><pre>    <span class="n">yLength</span> <span class="o">=</span> <span class="n">thermogram</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">];</span> <span class="c1">#Note that y is before x; a carry over from </span>
+    <span class="n">xLength</span> <span class="o">=</span> <span class="n">thermogram</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">2</span><span class="p">];</span> <span class="c1"># Matlab...</span></pre></div>
     </div>
   </div>
   <div class='clearall'></div>
@@ -252,15 +239,10 @@ thermogram has been analysed.</p>
       <div class='octowrap'>
         <a class='octothorpe' href='#section-14'>#</a>
       </div>
-      <p>sum the subtraction across each frame</p>
+      <p>Preallocate phase maps</p>
     </div>
     <div class='code'>
-      <div class="highlight"><pre>        <span class="k">for</span> <span class="n">frame</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">frame_length</span><span class="o">-</span><span class="mi">1</span><span class="p">):</span>
-             <span class="n">contrast_map</span><span class="p">[</span><span class="n">frame_index</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:]</span> <span class="o">+=</span> <span class="n">thermogram</span><span class="p">[</span><span class="n">frame_index</span><span class="o">*</span><span class="n">frame_length</span><span class="o">+</span><span class="n">frame</span><span class="p">]</span> <span class="o">-</span> <span class="n">thermogram</span><span class="p">[</span><span class="n">frame_index</span><span class="o">*</span><span class="n">frame_length</span><span class="o">+</span><span class="n">frame</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span>
-
-        <span class="n">frame_index</span> <span class="o">+=</span> <span class="mi">1</span>
-
-    <span class="k">return</span> <span class="n">contrast_map</span></pre></div>
+      <div class="highlight"><pre>    <span class="n">phasemap</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">zeros</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="n">yLength</span><span class="p">,</span> <span class="n">xLength</span><span class="p">],</span> <span class="n">dtype</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">complex64</span><span class="p">)</span></pre></div>
     </div>
   </div>
   <div class='clearall'></div>
@@ -269,11 +251,14 @@ thermogram has been analysed.</p>
       <div class='octowrap'>
         <a class='octothorpe' href='#section-15'>#</a>
       </div>
-      
+      <p>Perform FFT over the range specified</p>
     </div>
     <div class='code'>
-      <div class="highlight"><pre><span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">c</span><span class="p">,</span> <span class="n">d</span><span class="p">,</span> <span class="n">e</span><span class="p">):</span>
-    <span class="k">return</span> <span class="n">a</span> <span class="o">+</span> <span class="n">b</span> <span class="o">*</span> <span class="n">numpy</span><span class="o">.</span><span class="n">power</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">x</span><span class="p">),</span> <span class="mi">1</span><span class="p">)</span></pre></div>
+      <div class="highlight"><pre>    <span class="n">fftmap</span> <span class="o">=</span> <span class="n">scipy</span><span class="o">.</span><span class="n">fft</span><span class="p">(</span><span class="n">thermogram</span><span class="p">[</span><span class="n">frame_start</span> <span class="p">:</span> <span class="n">frame_start</span> <span class="o">+</span> <span class="n">frames_to_process</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:],</span>
+                                  <span class="n">axis</span> <span class="o">=</span> <span class="mi">0</span><span class="p">)</span>
+    <span class="n">phasemap</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">scipy</span><span class="o">.</span><span class="n">angle</span><span class="p">(</span><span class="n">fftmap</span><span class="p">[</span><span class="n">return_phase</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:])</span>
+        
+    <span class="k">return</span> <span class="n">phasemap</span></pre></div>
     </div>
   </div>
   <div class='clearall'></div>
@@ -285,7 +270,11 @@ thermogram has been analysed.</p>
       
     </div>
     <div class='code'>
-      <div class="highlight"><pre><span class="k">def</span> <span class="nf">thermographic_signal_reconstruction</span><span class="p">(</span><span class="n">thermogram</span><span class="p">,</span> <span class="n">frame_length</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">return_phase</span> <span class="o">=</span> <span class="mi">0</span><span class="p">):</span></pre></div>
+      <div class="highlight"><pre><span class="k">def</span> <span class="nf">image_subtraction</span><span class="p">(</span><span class="n">thermogram</span><span class="p">,</span> <span class="n">frames_to_process</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">frame_start</span> <span class="o">=</span> <span class="mi">0</span><span class="p">):</span>
+    <span class="n">total_frames</span> <span class="o">=</span> <span class="n">thermogram</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    
+    <span class="n">yLength</span> <span class="o">=</span> <span class="n">thermogram</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">];</span> <span class="c1">#Note that y is before x; a carry over from </span>
+    <span class="n">xLength</span> <span class="o">=</span> <span class="n">thermogram</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">2</span><span class="p">];</span> <span class="c1"># Matlab...</span></pre></div>
     </div>
   </div>
   <div class='clearall'></div>
@@ -294,10 +283,10 @@ thermogram has been analysed.</p>
       <div class='octowrap'>
         <a class='octothorpe' href='#section-17'>#</a>
       </div>
-      <p>Last argument is which argument to return</p>
+      <p>Preallocate phase maps</p>
     </div>
     <div class='code'>
-      <div class="highlight"><pre>    <span class="n">total_frames</span> <span class="o">=</span> <span class="n">thermogram</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span></pre></div>
+      <div class="highlight"><pre>    <span class="n">contrast_map</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">zeros</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="n">yLength</span><span class="p">,</span> <span class="n">xLength</span><span class="p">],</span> <span class="n">dtype</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">uint16</span><span class="p">)</span></pre></div>
     </div>
   </div>
   <div class='clearall'></div>
@@ -306,16 +295,13 @@ thermogram has been analysed.</p>
       <div class='octowrap'>
         <a class='octothorpe' href='#section-18'>#</a>
       </div>
-      <p>If the number of analysis frames hasn&rsquo;t been specified, use the total number</p>
+      <p>sum the subtraction across each frame</p>
     </div>
     <div class='code'>
-      <div class="highlight"><pre>    <span class="k">if</span> <span class="p">(</span><span class="n">frame_length</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="o">|</span> <span class="p">(</span><span class="n">total_frames</span> <span class="o">&gt;</span> <span class="n">total_frames</span><span class="p">):</span>
-        <span class="n">frame_length</span> <span class="o">=</span> <span class="n">total_frames</span>
-
-    <span class="n">yLength</span> <span class="o">=</span> <span class="n">thermogram</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">];</span> <span class="c1">#Note that y is before x; a carry over from</span>
-    <span class="n">xLength</span> <span class="o">=</span> <span class="n">thermogram</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">2</span><span class="p">];</span> <span class="c1"># Matlab...</span>
-
-    <span class="n">frame_index</span> <span class="o">=</span> <span class="mi">0</span> <span class="c1">#Slice index</span></pre></div>
+      <div class="highlight"><pre>    <span class="k">for</span> <span class="n">frame</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">frame_start</span><span class="p">,</span> <span class="n">frame_start</span> <span class="o">+</span> <span class="n">frames_to_process</span><span class="p">):</span>
+        <span class="n">contrast_map</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:]</span> <span class="o">+=</span> <span class="n">thermogram</span><span class="p">[</span><span class="n">frame</span><span class="p">]</span> <span class="o">-</span> <span class="n">thermogram</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+               
+    <span class="k">return</span> <span class="n">contrast_map</span></pre></div>
     </div>
   </div>
   <div class='clearall'></div>
@@ -324,11 +310,10 @@ thermogram has been analysed.</p>
       <div class='octowrap'>
         <a class='octothorpe' href='#section-19'>#</a>
       </div>
-      <p>Preallocate phase maps</p>
+      <p>The function used for curve fitting. Note that typical TSR uses a greater number</p>
     </div>
     <div class='code'>
-      <div class="highlight"><pre>    <span class="n">coefficient_count</span> <span class="o">=</span> <span class="n">ceil</span><span class="p">(</span><span class="n">total_frames</span><span class="o">/</span><span class="n">frame_length</span><span class="p">)</span>
-    <span class="n">coefficient_map</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">zeros</span><span class="p">([</span><span class="n">coefficient_count</span><span class="p">,</span> <span class="n">yLength</span><span class="p">,</span> <span class="n">xLength</span><span class="p">],</span> <span class="n">dtype</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">uint16</span><span class="p">)</span></pre></div>
+      <div class="highlight"><pre><span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">c</span><span class="p">,</span> <span class="n">d</span><span class="p">,</span> <span class="n">e</span><span class="p">):</span></pre></div>
     </div>
   </div>
   <div class='clearall'></div>
@@ -337,11 +322,12 @@ thermogram has been analysed.</p>
       <div class='octowrap'>
         <a class='octothorpe' href='#section-20'>#</a>
       </div>
-      <p>If the number of frames have been specified, loop over the fft until the entire
-thermogram has been analysed.</p>
+      <pre><code>of coefficients (hence the other coeffs specified in the arguments, but this is already
+very slow.
+</code></pre>
     </div>
     <div class='code'>
-      <div class="highlight"><pre>    <span class="k">for</span> <span class="n">frame_index</span> <span class="ow">in</span> <span class="nb">range</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">coefficient_count</span><span class="p">):</span></pre></div>
+      <div class="highlight"><pre>    <span class="k">return</span> <span class="n">a</span> <span class="o">+</span> <span class="n">b</span> <span class="o">*</span> <span class="n">numpy</span><span class="o">.</span><span class="n">power</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">x</span><span class="p">),</span> <span class="mi">1</span><span class="p">)</span></pre></div>
     </div>
   </div>
   <div class='clearall'></div>
@@ -350,24 +336,10 @@ thermogram has been analysed.</p>
       <div class='octowrap'>
         <a class='octothorpe' href='#section-21'>#</a>
       </div>
-      <p>perform reconstruction</p>
+      
     </div>
     <div class='code'>
-      <div class="highlight"><pre>        <span class="k">for</span> <span class="n">xi</span> <span class="ow">in</span> <span class="nb">range</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">xLength</span><span class="p">):</span>
-            <span class="k">for</span> <span class="n">yi</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">yLength</span><span class="p">):</span>
-                <span class="k">try</span><span class="p">:</span>
-                    <span class="n">popt</span><span class="p">,</span> <span class="n">pcov</span> <span class="o">=</span> <span class="n">curve_fit</span><span class="p">(</span><span class="n">func</span><span class="p">,</span> <span class="n">numpy</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">frame_length</span><span class="p">,</span> <span class="n">frame_length</span><span class="p">),</span>
-                                           <span class="n">numpy</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">thermogram</span><span class="p">[</span><span class="n">frame_index</span> <span class="o">*</span> <span class="n">frame_length</span> <span class="p">:</span>
-                                                      <span class="p">(</span><span class="n">frame_index</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">frame_length</span><span class="p">,</span>
-                                                      <span class="n">yi</span><span class="p">,</span> <span class="n">xi</span><span class="p">])</span><span class="o">.</span><span class="n">ravel</span><span class="p">()),</span> <span class="n">maxfev</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
-                    <span class="n">coefficient_map</span><span class="p">[</span><span class="n">frame_index</span><span class="p">,</span> <span class="n">yi</span><span class="p">,</span> <span class="n">xi</span><span class="p">]</span> <span class="o">=</span> <span class="n">popt</span><span class="p">[</span><span class="n">return_phase</span><span class="p">]</span>
-                <span class="k">except</span> <span class="ne">RuntimeError</span><span class="p">:</span>
-                    <span class="k">print</span><span class="p">(</span><span class="s2">&quot;No Match!&quot;</span><span class="p">)</span>
-                    <span class="n">coefficient_map</span><span class="p">[</span><span class="n">frame_index</span><span class="p">,</span> <span class="n">yi</span><span class="p">,</span> <span class="n">xi</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
-                <span class="k">print</span><span class="p">((</span><span class="n">xi</span><span class="o">/</span><span class="n">xLength</span><span class="o">+</span><span class="n">yi</span><span class="o">/</span><span class="n">xLength</span><span class="o">/</span><span class="n">yLength</span><span class="p">)</span><span class="o">*</span><span class="mi">100</span><span class="p">)</span>
-        <span class="n">frame_index</span> <span class="o">+=</span> <span class="mi">1</span>
-
-    <span class="k">return</span> <span class="n">coefficient_map</span></pre></div>
+      <div class="highlight"><pre><span class="k">def</span> <span class="nf">thermographic_signal_reconstruction</span><span class="p">(</span><span class="n">thermogram</span><span class="p">,</span> <span class="n">frames_to_process</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">return_phase</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">frame_start</span> <span class="o">=</span> <span class="mi">0</span><span class="p">):</span></pre></div>
     </div>
   </div>
   <div class='clearall'></div>
@@ -376,19 +348,52 @@ thermogram has been analysed.</p>
       <div class='octowrap'>
         <a class='octothorpe' href='#section-22'>#</a>
       </div>
-      <p>popt, pcov = curve_fit(func, numpy.linspace(1, frame_length, frame_length),
-                                           numpy.round(numpy.array(thermogram[frame_index * frame_length :
-                                                      (frame_index + 1) * frame_length,
-                                                      0, 150]).ravel()), maxfev=100)</p>
-<p>popt, pcov = curve_fit(func, numpy.array(list(range(0, frame_length)), dtype = numpy.uint16),
-                                           scipy.ones(19), maxfev=100)</p>
-<p>popt, pcov = curve_fit(func, numpy.linspace(1, frame_length, frame_length),
-                                           scipy.ones([19]), maxfev=100)</p>
-<p>popt, pcov = curve_fit(func, numpy.array(list(range(0, frame_length)), dtype = numpy.uint16),
-                                           scipy.ones(19), maxfev=100)</p>
+      <p>Last argument is which argument to return</p>
     </div>
     <div class='code'>
-      <div class="highlight"><pre></pre></div>
+      <div class="highlight"><pre>    
+    <span class="n">yLength</span> <span class="o">=</span> <span class="n">thermogram</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">];</span> <span class="c1">#Note that y is before x; a carry over from </span>
+
+    <span class="n">frame_index</span> <span class="o">=</span> <span class="mi">0</span> <span class="c1">#Slice index</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-23'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-23'>#</a>
+      </div>
+      <p>Preallocate phase maps</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>    <span class="n">coefficient_map</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">zeros</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="n">yLength</span><span class="p">,</span> <span class="n">xLength</span><span class="p">],</span> <span class="n">dtype</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">uint16</span><span class="p">)</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-24'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-24'>#</a>
+      </div>
+      <p>perform reconstruction over each pixel</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>    <span class="k">for</span> <span class="n">xi</span> <span class="ow">in</span> <span class="nb">range</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">xLength</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">yi</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">yLength</span><span class="p">):</span>
+            <span class="k">try</span><span class="p">:</span> 
+                <span class="n">popt</span><span class="p">,</span> <span class="n">pcov</span> <span class="o">=</span> <span class="n">curve_fit</span><span class="p">(</span><span class="n">func</span><span class="p">,</span> <span class="n">numpy</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">frames_to_process</span><span class="p">,</span> <span class="n">frames_to_process</span><span class="p">),</span>
+                                       <span class="n">numpy</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">thermogram</span><span class="p">[</span><span class="n">frame_start</span><span class="p">:</span>
+                                                                          <span class="n">frame_start</span> <span class="o">+</span> <span class="n">frames_to_process</span><span class="p">,</span>
+                                                                          <span class="n">yi</span><span class="p">,</span> <span class="n">xi</span><span class="p">])</span><span class="o">.</span><span class="n">ravel</span><span class="p">()),</span> <span class="n">maxfev</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
+                <span class="n">coefficient_map</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="n">yi</span><span class="p">,</span> <span class="n">xi</span><span class="p">]</span> <span class="o">=</span> <span class="n">popt</span><span class="p">[</span><span class="n">return_phase</span><span class="p">]</span>
+            <span class="k">except</span> <span class="ne">RuntimeError</span><span class="p">:</span>
+                <span class="k">print</span><span class="p">(</span><span class="s2">&quot;No Match!&quot;</span><span class="p">)</span>
+                <span class="n">coefficient_map</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="n">yi</span><span class="p">,</span> <span class="n">xi</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="k">print</span><span class="p">((</span><span class="n">xi</span><span class="o">/</span><span class="n">xLength</span><span class="o">+</span><span class="n">yi</span><span class="o">/</span><span class="n">xLength</span><span class="o">/</span><span class="n">yLength</span><span class="p">)</span><span class="o">*</span><span class="mi">100</span><span class="p">)</span> <span class="c1">#Print the number of pixels analysed as a percentage</span>
+        
+    <span class="k">return</span> <span class="n">coefficient_map</span>
+
+</pre></div>
     </div>
   </div>
   <div class='clearall'></div>

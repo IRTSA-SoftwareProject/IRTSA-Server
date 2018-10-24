@@ -20,7 +20,8 @@
       <p>Created on 11 Apr. 2018
 This module provides a method to read <em>.ris files into a numpy
 multidimensional array. Note that </em>.ris files are 16-bit per pixel.</p>
-<p>@author: James Moran</p>
+<p>&lt;&lt;&lt;&lt;&lt;&lt;&lt; HEAD
+@author: James Moran [jpmoran.pac@gmail.com]</p>
     </div>
     <div class='code'>
       <div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">re</span>
@@ -73,7 +74,7 @@ of frames.
         <a class='octothorpe' href='#section-3'>#</a>
       </div>
       <p>The final &ldquo;</ris>&rdquo; is on the same line as the first data, so add it
-manually (it must follow the last &ldquo;</description>&ldquo;).</p>
+ manually (it must follow the last &ldquo;</description>&ldquo;).</p>
     </div>
     <div class='code'>
       <div class="highlight"><pre>    <span class="n">metadata</span> <span class="o">=</span> <span class="n">metadata</span> <span class="o">+</span> <span class="nb">file</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="mi">6</span><span class="p">)</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span></pre></div>
@@ -128,8 +129,8 @@ reduce the total data stored in memory by subsectioning the thermogram.
         <a class='octothorpe' href='#section-7'>#</a>
       </div>
       <p>Get_Metadata returns the frame width and height of the file being examined.
-The width, height, and frame count specified to be examined must be less
-than or equal to this value.</p>
+ The width, height, and frame count specified to be examined must be less
+ than or equal to this value.</p>
     </div>
     <div class='code'>
       <div class="highlight"><pre>    <span class="p">[</span><span class="n">width_max</span><span class="p">,</span> <span class="n">height_max</span><span class="p">,</span> <span class="n">frame_count_max</span><span class="p">,</span> <span class="n">datastart</span><span class="p">]</span> <span class="o">=</span> <span class="n">_get_metadata</span><span class="p">(</span><span class="nb">file</span><span class="p">)</span></pre></div>
@@ -142,10 +143,10 @@ than or equal to this value.</p>
         <a class='octothorpe' href='#section-8'>#</a>
       </div>
       <p>If not specified, width, height, and frame count are set to infinite
-as the default call, so the value obtained from the metadata will
-always be smaller than this. The method also ensures the width and
-height are set to the maximum allowable values if set to greater than
-what is available.</p>
+ as the default call, so the value obtained from the metadata will
+ always be smaller than this. The method also ensures the width and
+ height are set to the maximum allowable values if set to greater than
+ what is available.</p>
     </div>
     <div class='code'>
       <div class="highlight"><pre>    <span class="n">width</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">width</span><span class="p">,</span> <span class="n">width_max</span><span class="p">)</span>
@@ -160,7 +161,7 @@ what is available.</p>
         <a class='octothorpe' href='#section-9'>#</a>
       </div>
       <p>Ensure the start + size does not exceed the maximum. If it does, set it to
-the largest allowable within maximum.</p>
+ the largest allowable within maximum.</p>
     </div>
     <div class='code'>
       <div class="highlight"><pre>    <span class="n">x_start</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">x_start</span><span class="o">+</span><span class="n">width</span><span class="p">,</span><span class="n">width_max</span><span class="p">)</span><span class="o">-</span><span class="n">width</span>
@@ -190,9 +191,9 @@ the largest allowable within maximum.</p>
       </div>
       <p>Locate the frame in the file
 The file is stored with each pixel stored as a 16-bit integer read left-to-right
-and top-to-bottom starting with the top left pixel. This means that the first x
-rows can be skipped if a size less than the frame height is specified. Same
-applies to the end of the file.</p>
+ and top-to-bottom starting with the top left pixel. This means that the first x
+ rows can be skipped if a size less than the frame height is specified. Same
+ applies to the end of the file.</p>
     </div>
     <div class='code'>
       <div class="highlight"><pre>        <span class="k">for</span> <span class="n">current_row</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">y_start</span><span class="p">,</span> <span class="n">y_start</span> <span class="o">+</span> <span class="n">height</span><span class="p">):</span>
@@ -202,6 +203,25 @@ applies to the end of the file.</p>
             <span class="n">read_bytes</span> <span class="o">=</span> <span class="n">struct</span><span class="o">.</span><span class="n">unpack</span><span class="p">(</span><span class="s1">&#39;H&#39;</span><span class="o">*</span><span class="nb">int</span><span class="p">(</span><span class="n">bytes_to_read</span><span class="o">/</span><span class="mi">2</span><span class="p">),</span><span class="n">read_bytes</span><span class="p">)</span> <span class="c1"># Convert bytes to u_int16</span>
             <span class="n">thermogram</span><span class="p">[</span><span class="n">current_frame</span><span class="o">-</span><span class="n">frame_start</span><span class="p">,</span> <span class="n">current_row</span><span class="o">-</span><span class="n">y_start</span><span class="p">,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">read_bytes</span>
 
+    <span class="k">return</span> <span class="n">thermogram</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-12'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-12'>#</a>
+      </div>
+      
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="k">def</span> <span class="nf">read_thermogram</span><span class="p">(</span><span class="nb">file</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39; Encapsulates the reading process and provides a file interface.</span>
+<span class="sd">    File is a path to a directory containing a .ris file.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">f</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="nb">file</span><span class="p">,</span> <span class="s1">&#39;rb&#39;</span><span class="p">)</span>
+    <span class="n">thermogram</span> <span class="o">=</span> <span class="n">get_thermogram</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+    <span class="n">f</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
     <span class="k">return</span> <span class="n">thermogram</span>
 
 </pre></div>
