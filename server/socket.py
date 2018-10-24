@@ -1,3 +1,7 @@
+"""The implementation of the socket. New connections will be passed to the await_events function
+in the events module.
+"""
+
 import websockets
 import socket
 

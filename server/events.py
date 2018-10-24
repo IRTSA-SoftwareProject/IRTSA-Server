@@ -1,3 +1,6 @@
+"""This module manages the parsing of client messages.
+To access the events, you can subcribe to the events Subject.
+"""
 import asyncio
 import json
 import traceback

@@ -92,9 +92,9 @@ This will install all of the pip packages that you need.
     
 ## Start the server
 
-The server requires python3.7, if you created a virtual environment and it is 
+The server requires python3.6, if you created a virtual environment and it is 
 active, the python version would have been configured for you automatically. If not, you'll have to
-make sure `python3 --version` says 3.7. Then run this:
+make sure `python3 --version` says 3.6. Then run this:
 
     python -m server
 

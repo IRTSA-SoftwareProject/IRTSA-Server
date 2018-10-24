@@ -1,7 +1,7 @@
-''' Created on 18 Sep. 2018, last edited 23 Oct. 2018
+""" Created on 18 Sep. 2018, last edited 23 Oct. 2018
 Stabilised a thermogram and returns a stabilised u_int16 3D numpy multdimensional array
 @author: Jayden Rautman, edited by James Moran [jpmoran.pac@gmail.com]
-'''
+"""
 
 import cv2
 import imageio
@@ -25,24 +25,25 @@ def stabilise_image(thermogram, frames_to_process = -1, start_frame = -1, global
         
     #Store original frames_to_process, as it is changed later in the code
     _frames_to_process = frames_to_process
- 
     #CV requires frames to be 8 bit map any numpy array to 8bit
     framesU8 = file_io_thermal._convert_to_u_int8(thermogram)
    
+
     #read the shape of the images
     height, width = thermogram[0].shape
-    
+
     #set a transform matrix
     transformed_frames = [np.identity(3)]
     
     #create a global motion matrix if specified
     if global_motion:
+
         #create a translation matrix, this will remove everything except the translation of the t'form
         translation_matrix = np.array([[0,0,1],[0,0,1]])
-        
+
         #initialise global transform as nonetype
-        global_transform = None;  
-             
+        global_transform = None;
+
         while (global_transform is None):
             #translation and frames_to_process arrays which will be applied to get the global translation per frame
             frames_to_process_matrix = np.array([[1, frames_to_process, frames_to_process], [frames_to_process, 1, frames_to_process]])
@@ -77,8 +78,8 @@ def stabilise_image(thermogram, frames_to_process = -1, start_frame = -1, global
         
         if global_motion:
             #take out the global transformation from the current transform
-            transform = np.subtract(transform,global_transform_matrix)            
-        
+            transform = np.subtract(transform,global_transform_matrix)
+
         #append the transform onto the transforms.
         if transform is not None:
             transform = np.append(transform, [[0, 0, 1]], axis=0)
@@ -86,7 +87,7 @@ def stabilise_image(thermogram, frames_to_process = -1, start_frame = -1, global
             transform = transformed_frames[-1]
         transformed_frames.append(transform)
         i = i+1
-        
+
     #create a stabilised frames array and apply the transform to each frame in the image.
     stabilised_frames = []
     final_transform = np.identity(3)
@@ -103,4 +104,3 @@ def stabilise_image(thermogram, frames_to_process = -1, start_frame = -1, global
     
     #return the new stabilised image
     return stabilisedFrames
-    
