@@ -126,7 +126,8 @@ def thermographic_signal_reconstruction(thermogram, frames_to_process = -1, retu
     #Last argument is which argument to return
     
     yLength = thermogram.shape[1]; #Note that y is before x; a carry over from 
-
+    xLength = thermogram.shape[2]; # Matlab...
+	
     frame_index = 0 #Slice index
     #Preallocate phase maps
     coefficient_map = numpy.zeros([1, yLength, xLength], dtype = numpy.uint16)
