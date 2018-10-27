@@ -46,7 +46,7 @@ def process_image(thermogram, method_select = 0, frames_to_process = -1, frame_s
         frame_start = 0
     
     # Also check the number of frames processed doesn't run longer than the file.
-    if (frames_to_process == -1) | (frame_start + total_frames > total_frames):
+    if (frames_to_process == -1) | (frame_start + frames_to_process > total_frames):
         frames_to_process = total_frames - frame_start
     
     # (Pseudo-)Static PPT
