@@ -26,7 +26,7 @@ Follow these steps in order to install and setup a Raspberry Pi as the IRTSA ser
 - Make the file executable with the command: `chmod +x pi_setup.sh`
 - Execute the script with the command: `sudo ./pi_setup.sh`
 
-This will setup the Raspberry Pi as in access point mode with the SSID of **rpi-AP** and password of **rpiAPpw1** and can be connected to with the IP address 10.0.0.1 either through a web browser or a ssh client (putty).
+This will setup the Raspberry Pi as in access point mode with the SSID of **rpi-AP** and password of **Th3rmalHotspot** and can be connected to with the IP address 10.0.0.1 either through a web browser or a ssh client (putty).
 
 
 ### Virtual Machine Setup
